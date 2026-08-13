@@ -15,7 +15,17 @@
 #include <stddef.h>
 
 static CAN_HandleTypeDef *s_hcan;
-static can_port_rx_callback_t s_rx_callback;
+/*
+ * s_rx_callback may be set or cleared from non-ISR context. The dispatcher may
+ * be invoked from an ISR. To avoid torn pointer reads and races between the
+ * contexts, access the callback pointer with atomic operations.
+ *
+ * Note: this uses GCC/Clang __atomic builtins for minimal toolchain impact.
+ * Prefer a dedicated ISR->mainline ring buffer for production systems so that
+ * ISR work is bounded and application callbacks always run outside interrupt
+ * context.
+ */
+static can_port_rx_callback_t s_rx_callback = NULL;
 
 int
 can_port_stm32_bind(CAN_HandleTypeDef *hcan) {
@@ -70,7 +80,8 @@ can_port_send(uint32_t id, uint8_t *data, uint8_t len) {
 
 void
 can_port_register_rx(can_port_rx_callback_t cb) {
-    s_rx_callback = cb;
+    /* Store the callback pointer atomically so ISR can safely read it. */
+    __atomic_store_n(&s_rx_callback, cb, __ATOMIC_RELEASE);
 }
 
 int
@@ -87,14 +98,17 @@ can_port_deinit(void) {
                                                           | CAN_IT_TX_MAILBOX_EMPTY | CAN_IT_ERROR);
         (void)HAL_CAN_Stop(s_hcan);
     }
-    s_rx_callback = NULL;
+    __atomic_store_n(&s_rx_callback, (can_port_rx_callback_t)NULL, __ATOMIC_RELEASE);
     s_hcan = NULL;
 }
 
 void
 can_port_stm32_dispatch_rx_from_isr(uint32_t id, uint8_t *data, uint8_t len) {
-    if (s_rx_callback != NULL && data != NULL && len <= CAN_PORT_MAX_DLC && id <= 0x7FFU) {
-        s_rx_callback(id, data, len);
+    /* Load the callback atomically to avoid torn reads while registration
+     * changes concurrently. Use acquire semantics to pair with release store. */
+    can_port_rx_callback_t cb = __atomic_load_n(&s_rx_callback, __ATOMIC_ACQUIRE);
+    if (cb != NULL && data != NULL && len <= CAN_PORT_MAX_DLC && id <= 0x7FFU) {
+        cb(id, data, len);
     }
 }
 
