@@ -1,0 +1,75 @@
+name: STM32F767 CMake build
+
+on:
+  push:
+    branches:
+      - stm32f767_canopen_cubemx
+  pull_request:
+    branches:
+      - stm32f767_canopen_cubemx
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build (${{ matrix.build_type }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type:
+          - Debug
+          - Release
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            binutils-arm-none-eabi \
+            cmake \
+            gcc-arm-none-eabi \
+            libnewlib-arm-none-eabi \
+            ninja-build
+
+      - name: Display toolchain versions
+        run: |
+          cmake --version
+          ninja --version
+          arm-none-eabi-gcc --version
+          arm-none-eabi-ld --version
+
+      - name: Configure CMake
+        run: cmake --preset "${{ matrix.build_type }}"
+
+      - name: Build firmware
+        run: cmake --build --preset "${{ matrix.build_type }}" --parallel
+
+      - name: Generate firmware images
+        working-directory: build/${{ matrix.build_type }}
+        run: |
+          arm-none-eabi-objcopy \
+            -O ihex \
+            stm32f767_canopen.elf \
+            stm32f767_canopen.hex
+          arm-none-eabi-objcopy \
+            -O binary \
+            stm32f767_canopen.elf \
+            stm32f767_canopen.bin
+          arm-none-eabi-size stm32f767_canopen.elf
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: stm32f767-canopen-${{ matrix.build_type }}
+          if-no-files-found: error
+          path: |
+            build/${{ matrix.build_type }}/stm32f767_canopen.elf
+            build/${{ matrix.build_type }}/stm32f767_canopen.hex
+            build/${{ matrix.build_type }}/stm32f767_canopen.bin
+            build/${{ matrix.build_type }}/stm32f767_canopen.map
