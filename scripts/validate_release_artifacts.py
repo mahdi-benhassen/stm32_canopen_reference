@@ -12,13 +12,9 @@ from pathlib import Path
 
 ARTIFACT_BASENAME = "stm32f767_canopen"
 ARTIFACT_SUFFIXES = (".elf", ".hex", ".bin", ".map")
-PERSONALITIES = (
-    "ci-firmware",
-    "ci-cia402",
-    "ci-cia418",
-    "ci-inventus-battery",
-    "ci-cia302-master",
-)
+# The evidence bundle is generated only by the default firmware matrix job.
+# Optional personalities are validated by their own build-and-upload jobs.
+PERSONALITIES = ("ci-firmware",)
 
 
 def require_file(path: Path) -> None:
