@@ -21,6 +21,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "CO_app_STM32.h"
+#include "canopen_reference_board.h"
+#include "canopen_reference_config.h"
+#include "canopen_reference_port_fixup.h"
+#include "canopen_reference_timing.h"
+#include "canopen_reference_watchdog.h"
 
 /* USER CODE END Includes */
 
@@ -45,7 +51,7 @@ CAN_HandleTypeDef hcan1;
 TIM_HandleTypeDef htim7;
 
 /* USER CODE BEGIN PV */
-
+static CANopenNodeSTM32 canopenInstance;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -60,7 +66,15 @@ static void MX_TIM7_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+#define CANOPEN_REFERENCE_FAULT_UNHANDLED 0xEA110000UL
 
+void
+HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    if (htim->Instance == TIM7) {
+        CANopenReferenceWatchdog_TickISR();
+        canopen_app_interrupt();
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -83,7 +97,9 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  CANopenReferenceTiming_Init();
+  CANopenReferenceBoard_InitSafe();
+  CANopenReferenceWatchdog_Init();
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -98,13 +114,30 @@ int main(void)
   MX_CAN1_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
+  CanopenReferencePortFixup_Prepare(&hcan1);
 
+  canopenInstance.desiredNodeID = CANOPEN_REFERENCE_DEFAULT_NODE_ID;
+  canopenInstance.activeNodeID = 0U;
+  canopenInstance.baudrate = CANOPEN_REFERENCE_DEFAULT_BITRATE_KBPS;
+  canopenInstance.timerHandle = &htim7;
+  canopenInstance.CANHandle = &hcan1;
+  canopenInstance.HWInitFunction = MX_CAN1_Init;
+  canopenInstance.outStatusLEDGreen = 0U;
+  canopenInstance.outStatusLEDRed = 0U;
+  canopenInstance.canOpenStack = NULL;
+
+  if (canopen_app_init(&canopenInstance) != 0) {
+      Error_Handler();
+  }
+  CANopenReferenceBoard_OnCanopenReady();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    canopen_app_process();
+    CANopenReferenceWatchdog_Process();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -301,7 +334,10 @@ void MPU_Config(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
+  CANopenReferenceBoard_ForceSafe();
+  /* Persist the fault across a warm reset; recoverable after reboot via
+   * CANopenReferenceWatchdog_PreviousFault(). */
+  CANopenReferenceWatchdog_RecordFatalFault(CANOPEN_REFERENCE_FAULT_UNHANDLED);
   __disable_irq();
   while (1)
   {
