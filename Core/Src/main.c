@@ -82,8 +82,15 @@ static void MX_TIM7_Init(void);
 void
 HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim->Instance == TIM7) {
+#if defined(CANOPEN_REFERENCE_ENABLE_TIMING_INSTRUMENTATION) && CANOPEN_REFERENCE_ENABLE_TIMING_INSTRUMENTATION
+        uint32_t tim7_start = CANopenReferenceTiming_Tim7Enter();
         CANopenReferenceWatchdog_TickISR();
         canopen_app_interrupt();
+        CANopenReferenceTiming_Tim7Exit(tim7_start);
+#else
+        CANopenReferenceWatchdog_TickISR();
+        canopen_app_interrupt();
+#endif
     }
 }
 /* USER CODE END 0 */

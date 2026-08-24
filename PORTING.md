@@ -36,6 +36,6 @@ starts:
 | Auto retransmission | DISABLE | ENABLE | CiA 301 mandates frame retransmission on error; disabled bxCAN silently drops frames |
 | Sample point @500 kbit/s | 12/18 tq = 66.7 % | 15/18 tq = 83.3 % | matches reference timing table and typical CiA network expectations |
 | Auto bus-off | DISABLE | kept DISABLE | bus-off recovery is owned by the bounded software recovery state machine |
-| TIM7 NVIC | not enabled | enabled at priority (1,0) | generated MSP only enables CAN IRQs; 1 ms dispatch must not preempt RX at (0,0) |
+| TIM7 NVIC priority | (0,0) — equal to CAN RX | demoted to (1,0) | 1 ms dispatch must not preempt CAN reception |
 
 TIM7 keeps the generated 1 ms cadence (108 MHz / 108 / 1000).

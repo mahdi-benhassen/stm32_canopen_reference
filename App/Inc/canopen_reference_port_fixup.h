@@ -30,8 +30,8 @@ extern "C" {
  *
  * Re-initializes CAN1 through HAL (MspDeInit/MspInit run again), so this must
  * be called before acceptance filters, notifications, or canopen_app_init().
- * Also enables the TIM7 interrupt at a priority below CAN RX (0,0) because
- * the generated MSP only enables the CAN interrupts.
+ * Also demotes the TIM7 interrupt from the generated priority (0,0) — equal
+ * to CAN RX — to (1,0), so CAN reception always preempts the 1 ms dispatch.
  */
 void CanopenReferencePortFixup_Prepare(CAN_HandleTypeDef *hcan);
 

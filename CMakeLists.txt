@@ -55,6 +55,19 @@ file(GLOB CANOPEN_NODE_SOURCES CONFIGURE_DEPENDS
     ${CANOPEN_NODE_DIR}/storage/CO_storage.c)
 
 option(CANOPEN_REFERENCE_PRODUCTION_PROFILE "Enable production optimization and compiler hardening" ON)
+option(CANOPEN_REFERENCE_ENABLE_CIA302_MASTER "Build the opt-in CiA 302 NMT-master personality" OFF)
+option(CANOPEN_REFERENCE_ENABLE_CIA418 "Build the opt-in CiA 418 live Object Dictionary personality" OFF)
+option(CANOPEN_REFERENCE_ENABLE_INVENTUS_BATTERY "Build the isolated Inventus battery test-only Object Dictionary personality" OFF)
+option(CANOPEN_REFERENCE_ENABLE_IWDG "Enable dual-rate IWDG supervision" OFF)
+option(CANOPEN_REFERENCE_ENABLE_TIMING_INSTRUMENTATION "Enable DWT timing instrumentation" OFF)
+
+if(CANOPEN_REFERENCE_ENABLE_INVENTUS_BATTERY)
+    set(CANOPEN_REFERENCE_OD_SOURCE Generated/inventus_battery_OD.c)
+elseif(CANOPEN_REFERENCE_ENABLE_CIA418)
+    set(CANOPEN_REFERENCE_OD_SOURCE Generated/cia418_OD.c)
+else()
+    set(CANOPEN_REFERENCE_OD_SOURCE Generated/OD.c)
+endif()
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
@@ -83,7 +96,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     middleware/canopen/core/can_acceptance_filter.c
     middleware/canopen/core/canopen_core.c
     middleware/canopen/core/cia302_nmt_master.c
-    Generated/OD.c
+    ${CANOPEN_REFERENCE_OD_SOURCE}
     ${CANOPEN_STM32_DIR}/CANopenNode_STM32/CO_driver_STM32.c
     ${CANOPEN_NODE_DIR}/CANopen.c
     ${CANOPEN_NODE_SOURCES}
@@ -114,9 +127,23 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     CO_DRIVER_CUSTOM
     CO_USE_GLOBALS
     __int64_t_defined=1
+    CANOPEN_REFERENCE_ENABLE_CIA302_MASTER=$<BOOL:${CANOPEN_REFERENCE_ENABLE_CIA302_MASTER}>
+    CANOPEN_REFERENCE_ENABLE_CIA418=$<BOOL:${CANOPEN_REFERENCE_ENABLE_CIA418}>
+    CANOPEN_REFERENCE_ENABLE_INVENTUS_BATTERY=$<BOOL:${CANOPEN_REFERENCE_ENABLE_INVENTUS_BATTERY}>
+    $<$<BOOL:${CANOPEN_REFERENCE_ENABLE_CIA418}>:CANOPEN_REFERENCE_ENABLE_CIA401=0>
+    $<$<BOOL:${CANOPEN_REFERENCE_ENABLE_CIA418}>:CANOPEN_REFERENCE_ENABLE_CIA402=0>
+    $<$<BOOL:${CANOPEN_REFERENCE_ENABLE_INVENTUS_BATTERY}>:CANOPEN_REFERENCE_ENABLE_CIA401=0>
+    $<$<Bool:${CANOPEN_REFERENCE_ENABLE_INVENTUS_BATTERY}>:CANOPEN_REFERENCE_ENABLE_CIA402=0>
+    CANOPEN_REFERENCE_ENABLE_IWDG=$<BOOL:${CANOPEN_REFERENCE_ENABLE_IWDG}>
+    CANOPEN_REFERENCE_ENABLE_TIMING_INSTRUMENTATION=$<BOOL:${CANOPEN_REFERENCE_ENABLE_TIMING_INSTRUMENTATION}>
+    $<$<BOOL:${CANOPEN_REFERENCE_ENABLE_IWDG}>:HAL_IWDG_MODULE_ENABLED>
 )
 
 if(CANOPEN_REFERENCE_PRODUCTION_PROFILE)
+    # Additive linker guard: keeps the application image below the reserved
+    # CANopen NVM sectors without modifying the generated linker script.
+    target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+        -T${CMAKE_CURRENT_SOURCE_DIR}/linker/canopen_nvm_reservation.ld)
     target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
         -Wall -Wextra -Wpedantic -Werror
         -Wformat=2 -Wconversion -Wshadow -Wundef -Werror=conversion)
@@ -128,13 +155,24 @@ if(CANOPEN_REFERENCE_PRODUCTION_PROFILE)
         ${CANOPEN_NODE_SOURCES}
         "${CANOPEN_NODE_DIR}/CANopen.c"
         "${CANOPEN_STM32_DIR}/CANopenNode_STM32/CO_driver_STM32.c"
-        Generated/OD.c
+        ${CANOPEN_REFERENCE_OD_SOURCE}
         Core/Src/syscalls.c
         PROPERTIES COMPILE_OPTIONS "-Wno-error=conversion;-Wno-error=sign-conversion;-Wno-error=format;-Wno-error=unused-parameter;-Wno-error=unused-variable;-Wno-error=undef")
 endif()
 
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
+
+# Post-build firmware images (parity with the main-branch pipeline)
+find_program(ARM_NONE_EABI_OBJCOPY arm-none-eabi-objcopy)
+if(NOT ARM_NONE_EABI_OBJCOPY)
+    set(ARM_NONE_EABI_OBJCOPY objcopy)
+endif()
+add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+    COMMAND ${ARM_NONE_EABI_OBJCOPY} -O ihex
+        $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.hex
+    COMMAND ${ARM_NONE_EABI_OBJCOPY} -O binary
+        $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.bin)
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}

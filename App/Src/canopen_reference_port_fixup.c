@@ -31,9 +31,8 @@ CanopenReferencePortFixup_Prepare(CAN_HandleTypeDef *hcan) {
         Error_Handler();
     }
 
-    /* The 1 ms CANopen dispatch must not preempt CAN reception (CAN IRQs are
-     * at priority 0,0 in the generated MSP). The generated code leaves TIM7
-     * out of the NVIC configuration, so enable it here. */
+    /* The generated MSP enables TIM7 at priority (0,0) — equal to CAN RX.
+     * Demote the 1 ms dispatch so CAN reception always preempts it. */
     HAL_NVIC_SetPriority(TIM7_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(TIM7_IRQn);
 }
