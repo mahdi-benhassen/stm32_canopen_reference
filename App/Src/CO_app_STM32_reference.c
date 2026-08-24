@@ -31,6 +31,9 @@
 #include "canopen_reference_lifecycle.h"
 #include "canopen_reference_storage.h"
 #include "canopen_reference_timing.h"
+#if (CANOPEN_REFERENCE_ENABLE_UDS != 0U)
+#include "canopen_reference_uds.h"
+#endif
 #include "cia401_reference.h"
 #include "cia402_reference.h"
 #include "cia418_reference.h"
@@ -120,6 +123,10 @@ CANopenReference_ConfigureCanFilter(uint8_t node_id) {
         || !CANopenReference_FilterAdd(ids, &count, 0x7E5U)) { /* LSS slave -> master */
         return false;
     }
+#if (CANOPEN_REFERENCE_ENABLE_UDS != 0U)
+    uint16_t uds_ids[2] = {(uint16_t)UDS_RX_CAN_ID, (uint16_t)UDS_TX_CAN_ID};
+    uint32_t uds_count = 2U;
+#endif
 
     for (uint32_t bank = 0U; bank < ((count + 3U) / 4U); ++bank) {
         CAN_FilterTypeDef filter = {0};
@@ -142,6 +149,25 @@ CANopenReference_ConfigureCanFilter(uint8_t node_id) {
             return false;
         }
     }
+#if (CANOPEN_REFERENCE_ENABLE_UDS != 0U)
+    if (uds_count != 0U) {
+        uint32_t bank = (count + 3U) / 4U;
+        CAN_FilterTypeDef filter = {0};
+        filter.FilterBank = bank;
+        filter.FilterMode = CAN_FILTERMODE_IDLIST;
+        filter.FilterScale = CAN_FILTERSCALE_16BIT;
+        filter.FilterIdHigh = (uint16_t)(uds_ids[0] << 5U);
+        filter.FilterIdLow = (uint16_t)(uds_ids[1] << 5U);
+        filter.FilterMaskIdHigh = 0U;
+        filter.FilterMaskIdLow = 0U;
+        filter.FilterFIFOAssignment = CAN_RX_FIFO1;
+        filter.FilterActivation = ENABLE;
+        filter.SlaveStartFilterBank = 14U;
+        if (HAL_CAN_ConfigFilter(hcan, &filter) != HAL_OK) {
+            return false;
+        }
+    }
+#endif
     return count != 0U;
 }
 
@@ -312,6 +338,11 @@ canopen_app_resetCommunication(void) {
         (void)errorInfo;
         return CANopenReference_FailRuntime(0xCA000016UL);
     }
+#if (CANOPEN_REFERENCE_ENABLE_UDS != 0U)
+    if (CANopenReference_UDS_Init(canopenNodeSTM32->CANHandle, HAL_GetTick()) != 0) {
+        return CANopenReference_FailRuntime(0xCA000019UL);
+    }
+#endif
 
     Cia401Reference_Init();
     Cia402Reference_Init();
@@ -357,6 +388,14 @@ canopen_app_process(void) {
     CANopenReferenceCia302_PreProcess(now);
     resetCommand = CO_process(CO, CANopenReferenceGateway_Authorized(), elapsedUs, NULL);
     CANopenReferenceCia302_Process(now);
+#if (CANOPEN_REFERENCE_ENABLE_UDS != 0U)
+    CANopenReference_UDS_Process(now);
+    if (CANopenReference_UDS_ResetPending()) {
+        CANopenReference_UDS_ClearReset();
+        CANopenReference_ForceSafeApplication();
+        HAL_NVIC_SystemReset();
+    }
+#endif
     canopenNodeSTM32->outStatusLEDRed = CO_LED_RED(CO->LEDs, CO_LED_CANopen);
     canopenNodeSTM32->outStatusLEDGreen = CO_LED_GREEN(CO->LEDs, CO_LED_CANopen);
     CANopenReferenceDiagnostics_Process(canopenNodeSTM32->activeNodeID, CO->CANmodule->CANerrorStatus,

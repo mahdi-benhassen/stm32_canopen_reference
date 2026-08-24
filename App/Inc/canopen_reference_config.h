@@ -132,6 +132,22 @@
 #error "IWDG startup grace must be shorter than the watchdog timeout."
 #endif
 
+/* UDS is disabled in existing production profiles until a product selects and
+ * validates its diagnostic access policy. The identifiers are configurable at
+ * compile time; 0x7E0/0x7E8 are only the documented reference defaults. */
+#ifndef CANOPEN_REFERENCE_ENABLE_UDS
+#define CANOPEN_REFERENCE_ENABLE_UDS             0U
+#endif
+#ifndef UDS_RX_CAN_ID
+#define UDS_RX_CAN_ID                            0x7E0U
+#endif
+#ifndef UDS_TX_CAN_ID
+#define UDS_TX_CAN_ID                            0x7E8U
+#endif
+#if (UDS_RX_CAN_ID > 0x7FFU) || (UDS_TX_CAN_ID > 0x7FFU) || (UDS_RX_CAN_ID == UDS_TX_CAN_ID)
+#error "UDS CAN identifiers must be distinct standard 11-bit identifiers."
+#endif
+
 /* CiA 309-3 ASCII gateway support is disabled unless the product has an
  * authenticated/physical diagnostic access policy and a bounded UART bridge. */
 #ifndef CANOPEN_REFERENCE_ENABLE_GATEWAY

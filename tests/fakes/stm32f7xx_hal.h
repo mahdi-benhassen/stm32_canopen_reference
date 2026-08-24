@@ -23,6 +23,16 @@ typedef struct {
     uint32_t TransmitGlobalTime;
 } CAN_TxHeaderTypeDef;
 
+typedef struct {
+    uint32_t StdId;
+    uint32_t ExtId;
+    uint32_t IDE;
+    uint32_t RTR;
+    uint32_t DLC;
+} CAN_RxHeaderTypeDef;
+
+typedef void (*HAL_CAN_RxCallbackTypeDef)(CAN_HandleTypeDef *hcan);
+
 typedef enum {
     HAL_OK = 0,
     HAL_ERROR = 1
@@ -32,6 +42,10 @@ typedef enum {
 #define CAN_IT_RX_FIFO1_MSG_PENDING (1U << 1)
 #define CAN_IT_TX_MAILBOX_EMPTY (1U << 2)
 #define CAN_IT_ERROR (1U << 3)
+#define CAN_RX_FIFO0 0U
+#define CAN_RX_FIFO1 1U
+#define HAL_CAN_RX_FIFO0_MSG_PENDING_CB_ID 0U
+#define HAL_CAN_RX_FIFO1_MSG_PENDING_CB_ID 1U
 #define CAN_ID_STD 0U
 #define CAN_RTR_DATA 0U
 #define DISABLE 0U
@@ -69,6 +83,39 @@ static inline HAL_StatusTypeDef
 HAL_CAN_DeactivateNotification(CAN_HandleTypeDef *hcan, uint32_t notifications) {
     (void)hcan;
     (void)notifications;
+    return HAL_OK;
+}
+
+static inline uint32_t
+HAL_CAN_GetRxFifoFillLevel(CAN_HandleTypeDef *hcan, uint32_t fifo) {
+    (void)hcan;
+    (void)fifo;
+    return 0U;
+}
+
+static inline HAL_StatusTypeDef
+HAL_CAN_GetRxMessage(CAN_HandleTypeDef *hcan, uint32_t fifo,
+                    CAN_RxHeaderTypeDef *header, uint8_t *data) {
+    (void)hcan;
+    (void)fifo;
+    (void)header;
+    (void)data;
+    return HAL_ERROR;
+}
+
+static inline HAL_StatusTypeDef
+HAL_CAN_RegisterCallback(CAN_HandleTypeDef *hcan, uint32_t callback_id,
+                         HAL_CAN_RxCallbackTypeDef callback) {
+    (void)hcan;
+    (void)callback_id;
+    (void)callback;
+    return HAL_OK;
+}
+
+static inline HAL_StatusTypeDef
+HAL_CAN_UnRegisterCallback(CAN_HandleTypeDef *hcan, uint32_t callback_id) {
+    (void)hcan;
+    (void)callback_id;
     return HAL_OK;
 }
 
