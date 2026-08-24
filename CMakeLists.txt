@@ -108,12 +108,12 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add project symbols (macros)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined symbols
+    # Note: ART_ACCELERATOR_ENABLE / USE_HAL_*_REGISTER_CALLBACKS are owned by
+    # the generated Core/Inc/stm32f7xx_hal_conf.h on this branch; redefining
+    # them on the command line would fail -Werror.
     CO_DRIVER_CUSTOM
     CO_USE_GLOBALS
     __int64_t_defined=1
-    USE_HAL_CAN_REGISTER_CALLBACKS=0
-    USE_HAL_TIM_REGISTER_CALLBACKS=0
-    ART_ACCELERATOR_ENABLE=1
 )
 
 if(CANOPEN_REFERENCE_PRODUCTION_PROFILE)
@@ -129,6 +129,7 @@ if(CANOPEN_REFERENCE_PRODUCTION_PROFILE)
         "${CANOPEN_NODE_DIR}/CANopen.c"
         "${CANOPEN_STM32_DIR}/CANopenNode_STM32/CO_driver_STM32.c"
         Generated/OD.c
+        Core/Src/syscalls.c
         PROPERTIES COMPILE_OPTIONS "-Wno-error=conversion;-Wno-error=sign-conversion;-Wno-error=format;-Wno-error=unused-parameter;-Wno-error=unused-variable;-Wno-error=undef")
 endif()
 
