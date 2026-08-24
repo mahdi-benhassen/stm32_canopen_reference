@@ -39,8 +39,8 @@ def main() -> None:
             fail(f"required file is missing or empty: {relative}")
 
     license_text = (ROOT / "LICENSE").read_text(encoding="utf-8")
-    if "Apache License" not in license_text or "Version 2.0" not in license_text:
-        fail("LICENSE does not contain the Apache-2.0 text")
+    if "STM32 CANopen Reference Research and Education License" not in license_text or "LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0" not in license_text:
+        fail("LICENSE does not contain the project research/education license")
 
     version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
     if not SEMVER_RE.fullmatch(version):
@@ -80,7 +80,7 @@ def main() -> None:
                 )
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    for required_link in ("BUILD.md", "LICENSE", "CONTRIBUTING.md", "SECURITY.md"):
+    for required_link in ("BUILD.md", "LICENSE", "COMMERCIAL-LICENSE.md", "CONTRIBUTING.md", "SECURITY.md"):
         if required_link not in readme:
             fail(f"README does not link to {required_link}")
 

@@ -128,4 +128,4 @@ The empty template is intentional: it prevents unexecuted hardware evidence from
 
 ---
 
-© 2026 project contributors. Licensed under Apache License 2.0.
+© 2026 project contributors. Licensed under the STM32 CANopen Reference Research and Education License.

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: Apache-2.0 */
+/* SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0 */
 #ifndef CIA401_REFERENCE_H
 #define CIA401_REFERENCE_H
 

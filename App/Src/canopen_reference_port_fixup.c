@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0
  *
  * See canopen_reference_port_fixup.h. This file adapts the generated
  * peripheral configuration to CANopen requirements without editing any

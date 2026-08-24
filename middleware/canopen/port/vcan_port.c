@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: Apache-2.0 */
+/* SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0 */
 /* SocketCAN implementation of middleware/canopen/port/can_port.h. */
 #ifndef _DEFAULT_SOURCE
 #define _DEFAULT_SOURCE

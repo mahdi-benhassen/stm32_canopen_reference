@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0
  *
  * Standard CANopen wire-contract constants used by host acceptance tests and
  * board integrations. This header does not implement a second CAN parser or

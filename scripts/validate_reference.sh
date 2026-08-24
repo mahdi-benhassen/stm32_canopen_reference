@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0
 # Reproducible local validation for the STM32F767 CANopen reference.
 set -eu
 

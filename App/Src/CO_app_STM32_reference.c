@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0
  *
  * Project-owned runtime wrapper derived from the CANopenNode STM32 integration
  * model. Compile this file instead of CANopenNode_STM32/CO_app_STM32.c.

@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0
  *
  * Test-only application data seam for the Inventus battery OD personality.
  * Generated OD files remain disposable artifacts; board/BMS integrations should

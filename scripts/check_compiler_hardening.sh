@@ -1,5 +1,5 @@
 #!/bin/sh
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0
 # Evaluate host compiler support for the hardening profile. This does not claim
 # that an STM32 product image has these flags until the target build adopts them.
 set -eu

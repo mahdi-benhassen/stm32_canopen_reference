@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0
  *
  * Product-level configuration for the STM32F767 CANopen reference firmware.
  * This file is intentionally outside third_party so it can be owned and

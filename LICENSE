@@ -1,198 +1,137 @@
-                                 Apache License
-                           Version 2.0, January 2004
-                        http://www.apache.org/licenses/
+STM32 CANopen Reference Research and Education License v1.0
 
-   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+Copyright (c) 2026 Mahdi Benhassen and contributors.
 
-   1. Definitions.
+IMPORTANT: This is a source-available license, not an OSI-approved Open Source
+license. It permits free use only for qualifying research and education. Any
+industrial, commercial, production, or large-scale use requires a separate
+paid commercial license.
 
-      "License" shall mean the terms and conditions for use, reproduction,
-      and distribution as defined by Sections 1 through 9 of this document.
+1. Definitions
 
-      "Licensor" shall mean the copyright owner or entity authorized by
-      the copyright owner that is granting the License.
+"Licensor" means the copyright holder or other person authorized to grant
+these permissions for the project-owned material covered by this license.
 
-      "Legal Entity" shall mean the union of the acting entity and all
-      other entities that control, are controlled by, or are under common
-      control with that entity. For the purposes of this definition,
-      "control" means (i) the power, direct or indirect, to cause the
-      direction or management of such entity, whether by contract or
-      otherwise, or (ii) ownership of fifty percent (50%) or more of the
-      outstanding shares, or (iii) beneficial ownership of such entity.
+"Project Material" means the project-owned source code, documentation,
+configuration, build files, scripts, tests, and other material in this
+repository that is marked with SPDX identifier LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0, or is otherwise
+identified as project-owned in the repository documentation. Project Material
+does not include Third-Party Material described in Section 5.
 
-      "You" (or "Your") shall mean an individual or Legal Entity
-      exercising permissions granted by this License.
+"Qualifying Research and Education Use" means use of Project Material solely
+for personal study, teaching, academic work, non-profit education, or
+non-commercial research, where the use is not part of a product or service,
+does not support an organization's ordinary business or production operations,
+and is not used to generate revenue or commercial advantage. A grant-funded or
+sponsored activity is not Qualifying Research and Education Use if the material
+is used for an industrial or commercial sponsor's product, service, or
+operations.
 
-      "Source" form shall mean the preferred form for making modifications,
-      including but not limited to software source code, documentation
-      source, and configuration files.
+"Commercial Use" means any use that is not Qualifying Research and Education
+Use, including industrial use, production deployment, internal business use,
+use in a product or service, use for a paying customer, or use that provides a
+commercial or competitive advantage.
 
-      "Object" form shall mean any form resulting from mechanical
-      transformation or translation of a Source form, including but
-      not limited to compiled object code, generated documentation,
-      and conversions to other media types.
+"Large-Scale Use" means deployment or operation involving more than ten (10)
+deployed devices, more than one hundred (100) end users, multiple operational
+sites, or a production or field deployment. Large-Scale Use requires a paid
+commercial license even when the activity is otherwise research-oriented.
 
-      "Work" shall mean the work of authorship, whether in Source or
-      Object form, made available under the License, as indicated by a
-      copyright notice that is included in or attached to the work
-      (an example is provided in the Appendix below).
+2. Free license for qualifying use
 
-      "Derivative Works" shall mean any work, whether in Source or
-      Object form, that is based on (or derived from) the Work and for
-      which the editorial revisions, annotations, elaborations, or other
-      modifications represent, as a whole, an original work of authorship.
-      For the purposes of this License, Derivative Works shall not include
-      works that remain separable from, or merely link (or bind by name) to,
-      the interfaces of, the Work and Derivative Works thereof.
+Subject to this license, the Licensor grants you a limited, worldwide,
+non-exclusive, non-transferable, royalty-free license to use, reproduce,
+modify, compile, execute, and distribute Project Material and modifications
+of it solely for Qualifying Research and Education Use. You may share source
+code and resulting object code for that same purpose, provided that you comply
+with Section 4.
 
-      "Contribution" shall mean any work of authorship, including the
-      original version of the Work and any modifications or additions to
-      that Work or Derivative Works thereof, that is intentionally submitted
-      to Licensor for inclusion in the Work by the copyright owner or by an
-      individual or Legal Entity authorized to submit on behalf of the
-      copyright owner. For the purposes of this definition, "submitted"
-      means any form of electronic, verbal, or written communication sent
-      to the Licensor or its representatives, including but not limited to
-      communication on electronic mailing lists, source code control systems,
-      and issue tracking systems that are managed by, or on behalf of, the
-      Licensor for the purpose of discussing and improving the Work, but
-      excluding communication that is conspicuously marked or otherwise
-      designated in writing by the copyright owner as "Not a Contribution."
+3. Paid commercial license required
 
-      "Contributor" shall mean Licensor and any individual or Legal Entity
-      on behalf of whom a Contribution has been received by Licensor and
-      subsequently incorporated within the Work.
+This license grants no permission for Commercial Use or Large-Scale Use. Those
+uses require a separate written commercial license from the Licensor before
+they begin. Commercial licensing may be requested from the repository owner at
+https://github.com/mahdi-benhassen. A payment or conversation alone does not
+grant commercial rights; the written commercial agreement controls.
 
-   2. Grant of Copyright License. Subject to the terms and conditions of
-      this License, each Contributor hereby grants to You a perpetual,
-      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-      copyright license to reproduce, prepare Derivative Works of,
-      publicly display, publicly perform, sublicense, and distribute the
-      Work and such Derivative Works in Source or Object form.
+Without that separate agreement, you must not use, reproduce, modify, compile,
+execute, distribute, sell, offer, or incorporate Project Material in an
+industrial, commercial, production, revenue-generating, or Large-Scale Use.
 
-   3. Grant of Patent License. Subject to the terms and conditions of
-      this License, each Contributor hereby grants to You a perpetual,
-      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-      (except as stated in this section) patent license to make, have made,
-      use, offer to sell, sell, import, and otherwise transfer the Work,
-      where such license applies only to those patent claims licensable by
-      such Contributor that are necessarily infringed by their Contribution(s)
-      alone or by combination of their Contribution(s) with the Work to which
-      such Contribution(s) was submitted. If You institute patent litigation
-      against any entity (including a cross-claim or counterclaim in a lawsuit)
-      alleging that the Work or a Contribution incorporated within the Work
-      constitutes direct or contributory patent infringement, then any patent
-      licenses granted to You under this License for that Work shall terminate
-      as of the date such litigation is filed.
+4. Conditions for permitted distribution
 
-   4. Redistribution. You may reproduce and distribute copies of the Work
-      or Derivative Works thereof in any medium, with or without modifications,
-      and in Source or Object form, provided that You meet the following
-      conditions:
+For permitted Qualifying Research and Education Use:
 
-      (a) You must give any other recipients of the Work or Derivative Works
-          a copy of this License; and
+(a) You must include a copy of this license with every distribution of Project
+Material or a derivative work.
 
-      (b) You must cause any modified files to carry prominent notices stating
-          that You changed the files; and
+(b) You must retain this copyright notice, the SPDX identifier, and any other
+applicable attribution notices.
 
-      (c) You must retain, in the Source form of any Derivative Works that You
-          distribute, all copyright, patent, trademark, and attribution notices
-          from the Source form of the Work, excluding those notices that do not
-          pertain to any part of the Derivative Works; and
+(c) You must clearly mark modified files and identify material changes.
 
-      (d) If the Work includes a "NOTICE" text file as part of its distribution,
-          then any Derivative Works that You distribute must include a readable
-          copy of the attribution notices contained within such NOTICE file,
-          excluding those notices that do not pertain to any part of the
-          Derivative Works, in at least one of the following places: within a
-          NOTICE file distributed as part of the Derivative Works; within the
-          Source form or documentation, if provided along with the Derivative
-          Works; or, within a display generated by the Derivative Works, if and
-          wherever such third-party notices normally appear. The contents of
-          the NOTICE file are for informational purposes only and do not modify
-          the License. You may add Your own attribution notices within Derivative
-          Works that You distribute, alongside or as an addendum to the NOTICE
-          text from the Work, provided that such additional attribution notices
-          cannot be construed as modifying the License.
+(d) You must not imply endorsement by the Licensor or use the Licensor's name,
+trademarks, or project branding except to accurately describe the origin of the
+material.
 
-      You may add Your own copyright statement to Your modifications and may
-      provide additional or different license terms and conditions for use,
-      reproduction, or distribution of Your modifications, or for any such
-      Derivative Works as a whole, provided Your use, reproduction, and
-      distribution of the Work otherwise complies with the conditions stated in
-      this License.
+(e) You must not remove or bypass a technical or contractual restriction that
+separates Qualifying Research and Education Use from Commercial Use or
+Large-Scale Use.
 
-   5. Submission of Contributions. Unless You explicitly state otherwise,
-      any Contribution intentionally submitted for inclusion in the Work by You
-      to the Licensor shall be under the terms and conditions of this License,
-      without any additional terms or conditions. Notwithstanding the above,
-      nothing herein shall supersede or modify the terms of any separate
-      license agreement you may have executed with Licensor regarding such
-      Contributions.
+5. Third-party material
 
-   6. Trademarks. This License does not grant permission to use the trade
-      names, trademarks, service marks, or product names of the Licensor,
-      except as required for reasonable and customary use in describing the
-      origin of the Work and reproducing the content of the NOTICE file.
+This license does not replace or modify the license of any third-party
+component. Third-Party Material includes, without limitation, the
+CANopenNode/CanOpenSTM32 submodule, STM32 CMSIS and HAL files, generated vendor
+material, and any file carrying its own license or attribution notice. You must
+comply with the applicable upstream license for each such component. See
+THIRD_PARTY.md and the license files distributed with the relevant component.
+If the terms of a Third-Party Material license conflict with this license, the
+third-party license controls that material.
 
-   7. Disclaimer of Warranty. Unless required by applicable law or agreed to
-      in writing, Licensor provides the Work (and each Contributor provides its
-      Contributions) on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
-      ANY KIND, either express or implied, including, without limitation, any
-      warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or
-      FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for
-      determining the appropriateness of using or redistributing the Work and
-      assume any risks associated with Your exercise of permissions under this
-      License.
+6. Contributions and prior versions
 
-   8. Limitation of Liability. In no event and under no legal theory, whether
-      in tort (including negligence), contract, or otherwise, unless required by
-      applicable law (such as deliberate and grossly negligent acts) or agreed
-      to in writing, shall any Contributor be liable to You for damages,
-      including any direct, indirect, special, incidental, or consequential
-      damages of any character arising as a result of this License or out of the
-      use or inability to use the Work (including but not limited to damages for
-      loss of goodwill, work stoppage, computer failure or malfunction, or any
-      and all other commercial damages or losses), even if such Contributor has
-      been advised of the possibility of such damages.
+A contribution is covered by this license only if the contributor has the right
+to license it under these terms or expressly agrees to these terms. This
+license does not revoke or rewrite rights that were granted under an earlier
+license for an earlier version or contribution. Existing copies and releases
+previously distributed under another license remain governed by that earlier
+license to the extent required by law.
 
-   9. Accepting Warranty or Additional Liability. While redistributing the Work
-      or Derivative Works thereof, You may choose to offer, and charge a fee for,
-      acceptance of support, warranty, indemnity, or other liability obligations
-      and/or rights consistent with this License. However, in accepting such
-      obligations, You may act only on Your own behalf and on Your sole
-      responsibility, not on behalf of any other Contributor, and only if You
-      agree to indemnify, defend, and hold each Contributor harmless for any
-      liability incurred by, or claims asserted against, such Contributor by
-      reason of your accepting any such warranty or additional liability.
+7. No patent grant
 
-   END OF TERMS AND CONDITIONS
+No patent license is granted by this license. Any patent rights must be
+addressed in a separate written agreement. This section does not limit rights
+that cannot lawfully be excluded.
 
-   APPENDIX: How to apply the Apache License to your work.
+8. Disclaimer of warranty
 
-      To apply the Apache License to your work, attach the following boilerplate
-      notice, with the fields enclosed by brackets "[]" replaced with your own
-      identifying information. (Don't include the brackets!) The text should be
-      enclosed in the appropriate comment syntax for the file format. We also
-      recommend that a file or class name and description of purpose be included
-      on the same "printed page" as the copyright notice for easier
-      identification within third-party archives.
+PROJECT MATERIAL IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING WARRANTIES OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY,
+OR FITNESS FOR A PARTICULAR PURPOSE. YOU ARE RESPONSIBLE FOR DETERMINING
+WHETHER IT IS SUITABLE FOR YOUR USE. THIS REFERENCE SOFTWARE IS NOT A SAFETY,
+MEDICAL, AUTOMOTIVE, OR INDUSTRIAL CERTIFICATION AND MUST NOT BE USED TO CLAIM
+CONFORMANCE WITHOUT THE REQUIRED PRODUCT-SPECIFIC VALIDATION.
 
-   Copyright [yyyy] [name of copyright owner]
+9. Limitation of liability
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSOR AND CONTRIBUTORS SHALL NOT
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+CONSEQUENTIAL, OR OTHER DAMAGES ARISING FROM THIS LICENSE OR THE USE OF PROJECT
+MATERIAL, INCLUDING LOSS OF DATA, PROFITS, PRODUCTION, OR BUSINESS INTERRUPTION,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-       http://www.apache.org/licenses/LICENSE-2.0
+10. Termination
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+Your rights under this license terminate automatically if you materially breach
+its terms. Rights for qualifying use may be restored only if the Licensor
+confirms the restoration in writing. Sections 5 through 9 survive termination.
 
-Project-owned source files in this repository identify this license with
-SPDX-License-Identifier: Apache-2.0. Third-party components retain their
-upstream license terms; see THIRD_PARTY.md and the notices under third_party/.
+11. Entire license
+
+This license is the complete license for Project Material unless the Licensor
+grants different terms in a separate written agreement. If any provision is
+held unenforceable, it shall be modified only to the minimum extent necessary,
+and the remaining provisions shall remain in effect.
+
+SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0

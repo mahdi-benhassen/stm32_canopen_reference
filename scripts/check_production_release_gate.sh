@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0
 # Release checklist gate. Production mode requires externally archived evidence;
 # it never treats host reports as substitutes for hardware or conformance tests.
 set -euo pipefail

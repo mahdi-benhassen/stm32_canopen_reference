@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0
 # Check a GNU ld map produced by the target build. This is a size budget gate,
 # not a stack-depth or worst-case execution-time measurement.
 set -euo pipefail

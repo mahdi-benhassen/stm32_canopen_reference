@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0
  *
  * CANopenNode feature override. The STM32 driver includes this file when the
  * build defines CO_DRIVER_CUSTOM. Values use the public flag bits declared in

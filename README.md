@@ -21,6 +21,10 @@ peripheral fix-ups applied on top of the generated configuration.
 - Full validation ecosystem ported from `main`: host unit tests, 105
   conformance vectors, wire contracts, OD/product validators, release gates.
 
+## License
+
+Project-owned material is available under the [STM32 CANopen Reference Research and Education License](LICENSE). It is free only for qualifying research and education; industrial, commercial, production, and large-scale use requires a separate paid commercial license. This is source-available and is not an OSI-approved Open Source license. See [COMMERCIAL-LICENSE.md](COMMERCIAL-LICENSE.md) for commercial licensing requests. Third-party components retain their upstream licenses as listed in [THIRD_PARTY.md](THIRD_PARTY.md).
+
 ## Build
 
 Requires CMake + Ninja + GNU Arm Embedded toolchain. HAL/CMSIS are vendored

@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0
  *
  * Bounded CiA 302 NMT-master foundation for the reference project.
  * This module is transport-neutral: the application supplies frame/event

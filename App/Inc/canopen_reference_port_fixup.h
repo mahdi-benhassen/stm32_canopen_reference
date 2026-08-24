@@ -1,5 +1,5 @@
 /*
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: LicenseRef-STM32-CANopen-Research-Education-Commercial-1.0
  *
  * Deliberate, documented fix-ups applied to the CubeMX-generated peripheral
  * configuration before the CANopen runtime starts. This module exists so the
