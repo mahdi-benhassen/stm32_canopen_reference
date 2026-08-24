@@ -10,8 +10,15 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
-ELF_NAME = "stm32f767_canopen"
-PERSONALITIES = ("ci-firmware", "ci-cia402", "ci-cia302", "ci-gateway")
+ARTIFACT_BASENAME = "stm32f767_canopen"
+ARTIFACT_SUFFIXES = (".elf", ".hex", ".bin", ".map")
+PERSONALITIES = (
+    "ci-firmware",
+    "ci-cia402",
+    "ci-cia418",
+    "ci-inventus-battery",
+    "ci-cia302-master",
+)
 
 
 def require_file(path: Path) -> None:
@@ -49,8 +56,8 @@ def main() -> int:
         raise AssertionError("linker script hash does not match build manifest")
 
     for personality in PERSONALITIES:
-        base = root / f"build/{personality}/{ELF_NAME}"
-        for suffix in ("", ".hex", ".bin", ".map"):
+        base = root / f"build/{personality}/{ARTIFACT_BASENAME}"
+        for suffix in ARTIFACT_SUFFIXES:
             require_file(base.with_name(base.name + suffix))
 
     junit_path = root / "build/reports/test-results.xml"
