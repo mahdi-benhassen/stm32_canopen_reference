@@ -132,11 +132,11 @@
 #error "IWDG startup grace must be shorter than the watchdog timeout."
 #endif
 
-/* UDS is disabled in existing production profiles until a product selects and
- * validates its diagnostic access policy. The identifiers are configurable at
- * compile time; 0x7E0/0x7E8 are only the documented reference defaults. */
+/* UDS is enabled by default for the validated reference build. A product may
+ * explicitly disable it at compile time after reviewing its diagnostic policy.
+ * The identifiers remain configurable; 0x7E0/0x7E8 are the reference defaults. */
 #ifndef CANOPEN_REFERENCE_ENABLE_UDS
-#define CANOPEN_REFERENCE_ENABLE_UDS             0U
+#define CANOPEN_REFERENCE_ENABLE_UDS             1U
 #endif
 #ifndef UDS_RX_CAN_ID
 #define UDS_RX_CAN_ID                            0x7E0U

@@ -1,6 +1,6 @@
 # UDS Architecture
 
-This repository implements an opt-in, bounded UDS reference subset over classic CAN. The design separates the CAN controller adapter, ISO-TP transport, UDS service dispatcher, and product policy. The application layer is informed by ISO 14229-1 [1]; the classic-CAN transport subset is informed by ISO 15765-2 [2]. The implementation is not a claim of complete or certified conformance to those standards.
+This repository implements a bounded UDS reference subset over classic CAN; it is enabled by default in the current reference build and can be disabled at compile time. The design separates the CAN controller adapter, ISO-TP transport, UDS service dispatcher, and product policy. The application layer is informed by ISO 14229-1 [1]; the classic-CAN transport subset is informed by ISO 15765-2 [2]. The implementation is not a claim of complete or certified conformance to those standards.
 
 ## Runtime layers
 
@@ -11,7 +11,7 @@ This repository implements an opt-in, bounded UDS reference subset over classic 
 | UDS core | `middleware/diagnostics/uds/uds.c` | Sessions, service dispatch, NRCs, response bounds, and callback ownership. |
 | Policy | DID, SecurityAccess, download, and application wrapper modules | Product data, authorization, memory regions, and lifecycle callbacks. |
 
-CANopenNode remains the CANopen owner. UDS is initialized only when `CANOPEN_REFERENCE_ENABLE_UDS=1`. The normal CANopen process and watchdog order remain unchanged; UDS runs in an explicit mainline budget after CANopen processing.
+CANopenNode remains the CANopen owner. UDS is initialized when `CANOPEN_REFERENCE_ENABLE_UDS=1`; the current CMake and configuration-header defaults set this to enabled, while products may explicitly disable it. The normal CANopen process and watchdog order remain unchanged; UDS runs in an explicit mainline budget after CANopen processing.
 
 ## Safety boundary
 

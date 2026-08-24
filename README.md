@@ -55,7 +55,7 @@ sanitizer gates.
 
 ## UDS diagnostics
 
-The opt-in UDS profile is a bounded classic-CAN ISO-TP and UDS reference subset. Start with the [UDS documentation index](docs/uds/), especially the [architecture](docs/uds/architecture.md), [ISO-TP](docs/uds/isotp.md), [services](docs/uds/services.md), [CubeMX integration](docs/uds/cubemx_integration.md), and [HIL testing](docs/uds/hil_testing.md) guides. The [STM32F767 hardware runner](tests/hardware/run_uds_stm32f767_acceptance.py) keeps reset and download operations disabled unless explicitly enabled. This branch does not claim complete ISO 14229 or ISO 15765-2 conformance, a production bootloader, or production cryptographic update security.
+The UDS profile is enabled by default in the current reference build and is a bounded classic-CAN ISO-TP and UDS reference subset. Disable it deliberately with `-DCANOPEN_REFERENCE_ENABLE_UDS=OFF` when a product policy requires that boundary. Start with the [UDS documentation index](docs/uds/), especially the [architecture](docs/uds/architecture.md), [ISO-TP](docs/uds/isotp.md), [services](docs/uds/services.md), [CubeMX integration](docs/uds/cubemx_integration.md), and [HIL testing](docs/uds/hil_testing.md) guides. The [STM32F767 hardware runner](tests/hardware/run_uds_stm32f767_acceptance.py) keeps reset and download operations disabled unless explicitly enabled. This branch does not claim complete ISO 14229 or ISO 15765-2 conformance, a production bootloader, or production cryptographic update security.
 
 ## Hardware notes
 

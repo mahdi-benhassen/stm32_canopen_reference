@@ -51,7 +51,7 @@ These results are **software and build evidence only**. No actual STM32F767 boar
 
 ## Release decision
 
-Issue #16 is **not ready for production closure**. The mandatory release blockers are physical HIL and CANopen coexistence evidence, target timing distributions and deadline proof, bus-off/error and watchdog campaigns, board-pin reconciliation, a production SecurityAccess provider, and a bootloader-backed authenticated Flash activation/recovery design. The safe reference default is to leave UDS disabled and leave destructive operations denied.
+Issue #16 is **not ready for production closure**. The current reference configuration now enables the bounded UDS profile by default, but the mandatory release blockers remain: physical HIL and CANopen coexistence evidence, target timing distributions and deadline proof, bus-off/error and watchdog campaigns, board-pin reconciliation, a production SecurityAccess provider, and a bootloader-backed authenticated Flash activation/recovery design. Destructive operations remain denied until product-owned callbacks and authorization are installed; products that do not want diagnostics must explicitly configure `CANOPEN_REFERENCE_ENABLE_UDS=OFF`.
 
 ## References
 

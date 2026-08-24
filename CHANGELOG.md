@@ -6,7 +6,7 @@ All notable changes to this project are documented here. The project follows sem
 
 ### UDS Issue #16 reference implementation
 
-- Added an opt-in, protocol-independent classic-CAN ISO-TP/UDS reference subset with static buffers, bounded timers, FIFO1 STM32 adapter, DID registry, replaceable SecurityAccess provider, and callback-driven download architecture.
+- Added a protocol-independent classic-CAN ISO-TP/UDS reference subset enabled by default in the current reference build, with static buffers, bounded timers, FIFO1 STM32 adapter, DID registry, replaceable SecurityAccess provider, and callback-driven download architecture.
 - Added host and fake-HAL tests for ISO-TP, UDS services, DIDs, security policy, download state transitions, runtime integration, adversarial inputs, and CANopen coexistence.
 - Added the required [`docs/uds/`](docs/uds/) architecture, ISO-TP, service, configuration, CAN-ID, timing, security, Flash, STM32F767, CubeMX, HIL, and troubleshooting guides.
 - Actual target timing distributions, physical HIL, bus-error/watchdog campaigns, production cryptography, and bootloader-backed Flash activation remain external evidence gates; this release does not claim complete ISO 14229/ISO 15765-2 conformance.

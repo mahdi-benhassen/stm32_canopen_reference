@@ -1,6 +1,6 @@
 # UDS / ISO-TP Documentation
 
-This directory is the authoritative documentation set for the bounded, opt-in STM32F767 UDS reference profile. It describes the separation between CANopenNode, the protocol-independent ISO-TP and UDS cores, the STM32 FIFO1 adapter, generated CubeMX infrastructure, and product-owned callbacks.
+This directory is the authoritative documentation set for the bounded STM32F767 UDS reference profile, enabled by default in the current reference build and disableable at compile time. It describes the separation between CANopenNode, the protocol-independent ISO-TP and UDS cores, the STM32 FIFO1 adapter, generated CubeMX infrastructure, and product-owned callbacks.
 
 | Document | Scope |
 |---|---|

@@ -66,9 +66,9 @@ arm-none-eabi-size build/f767/stm32f767_canopen_reference
 
 The output directory contains the ELF image and post-build HEX, BIN, and MAP artifacts. Retain the MAP file with release evidence.
 
-### Opt-in UDS profile
+### UDS profile
 
-Enable UDS only in a deliberate diagnostic build. This branch reuses the generated CAN1 handle, GPIO, NVIC, and TIM7 infrastructure. The profile uses a separate FIFO1 filter/callback and a bounded bare-metal main-loop budget; it is disabled by default and does not provide a production bootloader or production SecurityAccess provider.
+UDS is enabled by default in the current reference build. This branch reuses the generated CAN1 handle, GPIO, NVIC, and TIM7 infrastructure. The profile uses a separate FIFO1 filter/callback and a bounded bare-metal main-loop budget. To disable it deliberately, configure `-DCANOPEN_REFERENCE_ENABLE_UDS=OFF`. It does not provide a production bootloader or production SecurityAccess provider.
 
 ```sh
 cmake -S . -B build/f767-uds -DCMAKE_BUILD_TYPE=Release \
@@ -77,7 +77,7 @@ cmake --build build/f767-uds --parallel
 arm-none-eabi-size build/f767-uds/stm32f767_canopen.elf
 ```
 
-Review [`docs/uds/configuration.md`](docs/uds/configuration.md), [`docs/uds/can_ids.md`](docs/uds/can_ids.md), [`docs/uds/stm32f767.md`](docs/uds/stm32f767.md), and [`docs/uds/cubemx_integration.md`](docs/uds/cubemx_integration.md) before enabling it on a board. The generated `.ioc` assigns CAN1 RX to PI9 and TX to PA12; reconcile this with the actual schematic.
+Review [`docs/uds/configuration.md`](docs/uds/configuration.md), [`docs/uds/can_ids.md`](docs/uds/can_ids.md), [`docs/uds/stm32f767.md`](docs/uds/stm32f767.md), and [`docs/uds/cubemx_integration.md`](docs/uds/cubemx_integration.md) before using the enabled profile on a board. The generated `.ioc` assigns CAN1 RX to PI9 and TX to PA12; reconcile this with the actual schematic.
 
 ## Build personalities
 

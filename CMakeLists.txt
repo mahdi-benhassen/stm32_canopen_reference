@@ -60,7 +60,7 @@ option(CANOPEN_REFERENCE_ENABLE_CIA418 "Build the opt-in CiA 418 live Object Dic
 option(CANOPEN_REFERENCE_ENABLE_INVENTUS_BATTERY "Build the isolated Inventus battery test-only Object Dictionary personality" OFF)
 option(CANOPEN_REFERENCE_ENABLE_IWDG "Enable dual-rate IWDG supervision" OFF)
 option(CANOPEN_REFERENCE_ENABLE_TIMING_INSTRUMENTATION "Enable DWT timing instrumentation" OFF)
-option(CANOPEN_REFERENCE_ENABLE_UDS "Enable the opt-in UDS/ISO-TP diagnostic profile" OFF)
+option(CANOPEN_REFERENCE_ENABLE_UDS "Enable the UDS/ISO-TP diagnostic profile" ON)
 set(CANOPEN_REFERENCE_UDS_RX_CAN_ID "0x7E0" CACHE STRING "UDS diagnostic request CAN ID")
 set(CANOPEN_REFERENCE_UDS_TX_CAN_ID "0x7E8" CACHE STRING "UDS diagnostic response CAN ID")
 

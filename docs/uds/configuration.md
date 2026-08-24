@@ -1,10 +1,10 @@
 # UDS Configuration
 
-UDS is opt-in. Existing profiles build with `CANOPEN_REFERENCE_ENABLE_UDS=0` unless a product explicitly enables the diagnostic profile. The default identifiers are reference values only and are configurable.
+UDS is enabled by default in the current reference build. A product may explicitly disable it with `CANOPEN_REFERENCE_ENABLE_UDS=OFF` after reviewing its diagnostic access policy. The default identifiers are reference values only and remain configurable.
 
 | Configuration | Default | Meaning |
 |---|---:|---|
-| `CANOPEN_REFERENCE_ENABLE_UDS` | `0` | Enables the STM32 UDS runtime integration. |
+| `CANOPEN_REFERENCE_ENABLE_UDS` | `ON` | Enables the STM32 UDS runtime integration. |
 | `UDS_RX_CAN_ID` | `0x7E0` | Tester-to-ECU request identifier. |
 | `UDS_TX_CAN_ID` | `0x7E8` | ECU-to-tester response and flow-control input identifier. |
 | `ISOTP_MAX_PAYLOAD` | `4095` | Maximum logical classic-CAN ISO-TP payload. |
