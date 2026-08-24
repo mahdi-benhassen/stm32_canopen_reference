@@ -30,8 +30,8 @@ typedef struct {
     UdsSecurityProvider security;
     UdsDownload download;
     uint8_t response[UDS_RUNTIME_MAX_RESPONSE];
-    uint8_t software_version[8];
-    uint8_t hardware_version[8];
+    uint8_t software_version[10];
+    uint8_t hardware_version[10];
     uint8_t bootloader_version[8];
     uint8_t serial_number[16];
     uint8_t device_identity[16];
