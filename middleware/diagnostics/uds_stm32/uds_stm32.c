@@ -11,8 +11,7 @@
 static UdsStm32Can *s_attached_adapter;
 
 static void uds_stm32_can_rx_fifo1_callback(CAN_HandleTypeDef *hcan) {
-    if ((s_attached_adapter == NULL) || (hcan == NULL) ||
-        (hcan != s_attached_adapter->hcan)) {
+    if ((s_attached_adapter == NULL) || (hcan == NULL) || (hcan != s_attached_adapter->hcan)) {
         return;
     }
     while (HAL_CAN_GetRxFifoFillLevel(hcan, CAN_RX_FIFO1) != 0U) {
@@ -22,8 +21,7 @@ static void uds_stm32_can_rx_fifo1_callback(CAN_HandleTypeDef *hcan) {
             uds_stm32_can_note_error(s_attached_adapter, 1U, false);
             break;
         }
-        uds_stm32_can_rx_from_isr(s_attached_adapter, header.StdId, data,
-                                  (uint8_t)header.DLC);
+        uds_stm32_can_rx_from_isr(s_attached_adapter, header.StdId, data, (uint8_t)header.DLC);
     }
 }
 #endif
@@ -40,10 +38,10 @@ static void clear_stats(UdsStm32CanStats *stats) {
     (void)memset(stats, 0, sizeof(*stats));
 }
 
-int uds_stm32_can_bind(UdsStm32Can *adapter, CAN_HandleTypeDef *hcan,
-                       uint32_t request_id, uint32_t response_id) {
-    if ((adapter == NULL) || (hcan == NULL) || (request_id > 0x7FFU) ||
-        (response_id > 0x7FFU) || (request_id == response_id)) {
+int uds_stm32_can_bind(UdsStm32Can *adapter, CAN_HandleTypeDef *hcan, uint32_t request_id,
+                       uint32_t response_id) {
+    if ((adapter == NULL) || (hcan == NULL) || (request_id > 0x7FFU) || (response_id > 0x7FFU) ||
+        (request_id == response_id)) {
         return -EINVAL;
     }
     if (adapter->bound) {
@@ -80,10 +78,8 @@ int uds_stm32_can_attach(UdsStm32Can *adapter) {
 
 void uds_stm32_can_detach(UdsStm32Can *adapter) {
 #if defined(USE_HAL_CAN_REGISTER_CALLBACKS) && (USE_HAL_CAN_REGISTER_CALLBACKS != 0U)
-    if ((s_attached_adapter == adapter) && (adapter != NULL) &&
-        (adapter->hcan != NULL)) {
-        (void)HAL_CAN_UnRegisterCallback(adapter->hcan,
-                                         HAL_CAN_RX_FIFO1_MSG_PENDING_CB_ID);
+    if ((s_attached_adapter == adapter) && (adapter != NULL) && (adapter->hcan != NULL)) {
+        (void)HAL_CAN_UnRegisterCallback(adapter->hcan, HAL_CAN_RX_FIFO1_MSG_PENDING_CB_ID);
         s_attached_adapter = NULL;
     }
 #else
@@ -102,8 +98,8 @@ void uds_stm32_can_reset(UdsStm32Can *adapter) {
     clear_stats(&adapter->stats);
 }
 
-void uds_stm32_can_rx_from_isr(UdsStm32Can *adapter, uint32_t id,
-                               const uint8_t *data, uint8_t dlc) {
+void uds_stm32_can_rx_from_isr(UdsStm32Can *adapter, uint32_t id, const uint8_t *data,
+                               uint8_t dlc) {
     if ((adapter == NULL) || !adapter->bound || !valid_frame(id, data, dlc)) {
         if (adapter != NULL) {
             (void)__atomic_fetch_add(&adapter->stats.rx_invalid, 1U, __ATOMIC_RELAXED);
@@ -144,8 +140,7 @@ int uds_stm32_can_rx_pop(UdsStm32Can *adapter, IsoTpCanFrame *frame) {
     frame->can_id = slot->id;
     frame->dlc = slot->dlc;
     (void)memcpy(frame->data, slot->data, slot->dlc);
-    __atomic_store_n(&adapter->rx_tail,
-                     next_index(tail, UDS_STM32_RX_QUEUE_CAPACITY),
+    __atomic_store_n(&adapter->rx_tail, next_index(tail, UDS_STM32_RX_QUEUE_CAPACITY),
                      __ATOMIC_RELEASE);
     return 1;
 }
@@ -184,8 +179,7 @@ int uds_stm32_can_process_tx(UdsStm32Can *adapter, uint32_t budget) {
             break;
         }
         if (HAL_CAN_GetTxMailboxesFreeLevel(adapter->hcan) == 0U) {
-            (void)__atomic_fetch_add(&adapter->stats.tx_mailbox_exhausted, 1U,
-                                     __ATOMIC_RELAXED);
+            (void)__atomic_fetch_add(&adapter->stats.tx_mailbox_exhausted, 1U, __ATOMIC_RELAXED);
             break;
         }
 
@@ -202,8 +196,7 @@ int uds_stm32_can_process_tx(UdsStm32Can *adapter, uint32_t budget) {
             (void)__atomic_fetch_add(&adapter->stats.bus_errors, 1U, __ATOMIC_RELAXED);
             break;
         }
-        __atomic_store_n(&adapter->tx_tail,
-                         next_index(tail, UDS_STM32_TX_QUEUE_CAPACITY),
+        __atomic_store_n(&adapter->tx_tail, next_index(tail, UDS_STM32_TX_QUEUE_CAPACITY),
                          __ATOMIC_RELEASE);
         (void)__atomic_fetch_add(&adapter->stats.tx_frames, 1U, __ATOMIC_RELAXED);
         ++processed;
@@ -223,8 +216,7 @@ void uds_stm32_can_note_tx_timeout(UdsStm32Can *adapter) {
     }
 }
 
-void uds_stm32_can_note_error(UdsStm32Can *adapter, uint32_t hal_error,
-                              bool bus_off) {
+void uds_stm32_can_note_error(UdsStm32Can *adapter, uint32_t hal_error, bool bus_off) {
     if (adapter == NULL) {
         return;
     }
@@ -244,8 +236,8 @@ void uds_stm32_can_get_stats(const UdsStm32Can *adapter, UdsStm32CanStats *stats
     stats->tx_frames = __atomic_load_n(&adapter->stats.tx_frames, __ATOMIC_ACQUIRE);
     stats->rx_overflow = __atomic_load_n(&adapter->stats.rx_overflow, __ATOMIC_ACQUIRE);
     stats->tx_overflow = __atomic_load_n(&adapter->stats.tx_overflow, __ATOMIC_ACQUIRE);
-    stats->tx_mailbox_exhausted = __atomic_load_n(&adapter->stats.tx_mailbox_exhausted,
-                                                   __ATOMIC_ACQUIRE);
+    stats->tx_mailbox_exhausted =
+        __atomic_load_n(&adapter->stats.tx_mailbox_exhausted, __ATOMIC_ACQUIRE);
     stats->rx_invalid = __atomic_load_n(&adapter->stats.rx_invalid, __ATOMIC_ACQUIRE);
     stats->rx_timeouts = __atomic_load_n(&adapter->stats.rx_timeouts, __ATOMIC_ACQUIRE);
     stats->tx_timeouts = __atomic_load_n(&adapter->stats.tx_timeouts, __ATOMIC_ACQUIRE);

@@ -39,24 +39,16 @@ typedef struct {
 /* This implementation is a NON-PRODUCTION deterministic test provider. It is
  * intentionally replaceable: production code must inject an approved provider
  * without changing UDS core dispatch. */
-void uds_security_provider_init(UdsSecurityProvider *provider,
-                                uint32_t deterministic_seed,
-                                uint8_t maximum_attempts,
-                                uint32_t lockout_ms);
-UdsSecurityResult uds_security_provider_generate_seed(UdsSecurityProvider *provider,
-                                                       uint8_t level,
-                                                       uint8_t *seed,
-                                                       uint16_t *length,
-                                                       uint16_t capacity,
-                                                       uint32_t now_ms);
-UdsSecurityResult uds_security_provider_verify_key(UdsSecurityProvider *provider,
-                                                   uint8_t level,
-                                                   const uint8_t *key,
-                                                   uint16_t length,
+void uds_security_provider_init(UdsSecurityProvider *provider, uint32_t deterministic_seed,
+                                uint8_t maximum_attempts, uint32_t lockout_ms);
+UdsSecurityResult uds_security_provider_generate_seed(UdsSecurityProvider *provider, uint8_t level,
+                                                      uint8_t *seed, uint16_t *length,
+                                                      uint16_t capacity, uint32_t now_ms);
+UdsSecurityResult uds_security_provider_verify_key(UdsSecurityProvider *provider, uint8_t level,
+                                                   const uint8_t *key, uint16_t length,
                                                    uint32_t now_ms);
 void uds_security_provider_session_reset(UdsSecurityProvider *provider);
-bool uds_security_provider_is_locked(const UdsSecurityProvider *provider,
-                                     uint32_t now_ms);
+bool uds_security_provider_is_locked(const UdsSecurityProvider *provider, uint32_t now_ms);
 uint8_t uds_security_provider_security_level(const UdsSecurityProvider *provider);
 uint8_t uds_security_provider_failed_attempts(const UdsSecurityProvider *provider);
 

@@ -52,52 +52,48 @@ static UdsRuntime s_uds;
 
 static UdsCallbackResult map_did_result(UdsDidResult result) {
     switch (result) {
-        case UDS_DID_OK:
-            return UDS_RESULT_OK;
-        case UDS_DID_SESSION_DENIED:
-        case UDS_DID_SECURITY_DENIED:
-            return UDS_RESULT_DENIED;
-        case UDS_DID_NOT_FOUND:
-        case UDS_DID_NOT_READABLE:
-        case UDS_DID_NOT_WRITABLE:
-        case UDS_DID_INVALID_WRITE:
-            return UDS_RESULT_OUT_OF_RANGE;
-        case UDS_DID_RESPONSE_TOO_LONG:
-            return UDS_RESULT_RESPONSE_TOO_LONG;
-        default:
-            return UDS_RESULT_ERROR;
-    }
-}
-
-static UdsCallbackResult uds_read_did(void *context, uint16_t did,
-                                       uint8_t *data, uint16_t *length,
-                                       uint16_t capacity) {
-    UdsRuntime *runtime = (UdsRuntime *)context;
-    if (runtime == NULL) {
+    case UDS_DID_OK:
+        return UDS_RESULT_OK;
+    case UDS_DID_SESSION_DENIED:
+    case UDS_DID_SECURITY_DENIED:
+        return UDS_RESULT_DENIED;
+    case UDS_DID_NOT_FOUND:
+    case UDS_DID_NOT_READABLE:
+    case UDS_DID_NOT_WRITABLE:
+    case UDS_DID_INVALID_WRITE:
+        return UDS_RESULT_OUT_OF_RANGE;
+    case UDS_DID_RESPONSE_TOO_LONG:
+        return UDS_RESULT_RESPONSE_TOO_LONG;
+    default:
         return UDS_RESULT_ERROR;
     }
-    return map_did_result(uds_did_registry_read(&runtime->did_registry, did,
-                                                (uint8_t)uds_server_session(&runtime->server),
-                                                (uint8_t)uds_server_security_level(&runtime->server),
-                                                data, length, capacity));
 }
 
-static UdsCallbackResult uds_write_did(void *context, uint16_t did,
-                                        const uint8_t *data, uint16_t length) {
-    UdsRuntime *runtime = (UdsRuntime *)context;
-    if (runtime == NULL) {
-        return UDS_RESULT_ERROR;
-    }
-    return map_did_result(uds_did_registry_write(&runtime->did_registry, did,
-                                                 (uint8_t)uds_server_session(&runtime->server),
-                                                 (uint8_t)uds_server_security_level(&runtime->server),
-                                                 data, length));
-}
-
-static UdsCallbackResult uds_read_dtc(void *context, uint8_t subfunction,
-                                      const uint8_t *request, uint16_t request_len,
-                                      uint8_t *response, uint16_t *response_len,
+static UdsCallbackResult uds_read_did(void *context, uint16_t did, uint8_t *data, uint16_t *length,
                                       uint16_t capacity) {
+    UdsRuntime *runtime = (UdsRuntime *)context;
+    if (runtime == NULL) {
+        return UDS_RESULT_ERROR;
+    }
+    return map_did_result(uds_did_registry_read(
+        &runtime->did_registry, did, (uint8_t)uds_server_session(&runtime->server),
+        (uint8_t)uds_server_security_level(&runtime->server), data, length, capacity));
+}
+
+static UdsCallbackResult uds_write_did(void *context, uint16_t did, const uint8_t *data,
+                                       uint16_t length) {
+    UdsRuntime *runtime = (UdsRuntime *)context;
+    if (runtime == NULL) {
+        return UDS_RESULT_ERROR;
+    }
+    return map_did_result(uds_did_registry_write(
+        &runtime->did_registry, did, (uint8_t)uds_server_session(&runtime->server),
+        (uint8_t)uds_server_security_level(&runtime->server), data, length));
+}
+
+static UdsCallbackResult uds_read_dtc(void *context, uint8_t subfunction, const uint8_t *request,
+                                      uint16_t request_len, uint8_t *response,
+                                      uint16_t *response_len, uint16_t capacity) {
     (void)context;
     (void)request;
     (void)request_len;
@@ -114,9 +110,8 @@ static UdsCallbackResult uds_read_dtc(void *context, uint8_t subfunction,
     return UDS_RESULT_OK;
 }
 
-static UdsCallbackResult uds_security_seed(void *context, uint8_t level,
-                                           uint8_t *seed, uint16_t *length,
-                                           uint16_t capacity) {
+static UdsCallbackResult uds_security_seed(void *context, uint8_t level, uint8_t *seed,
+                                           uint16_t *length, uint16_t capacity) {
     UdsRuntime *runtime = (UdsRuntime *)context;
     if (runtime == NULL) {
         return UDS_RESULT_ERROR;
@@ -124,42 +119,41 @@ static UdsCallbackResult uds_security_seed(void *context, uint8_t level,
     UdsSecurityResult result = uds_security_provider_generate_seed(
         &runtime->security, level, seed, length, capacity, runtime->now_ms);
     switch (result) {
-        case UDS_SECURITY_OK:
-            return UDS_RESULT_OK;
-        case UDS_SECURITY_DELAY_ACTIVE:
-            return UDS_RESULT_DELAY_ACTIVE;
-        case UDS_SECURITY_BUFFER_TOO_SMALL:
-            return UDS_RESULT_RESPONSE_TOO_LONG;
-        default:
-            return UDS_RESULT_DENIED;
+    case UDS_SECURITY_OK:
+        return UDS_RESULT_OK;
+    case UDS_SECURITY_DELAY_ACTIVE:
+        return UDS_RESULT_DELAY_ACTIVE;
+    case UDS_SECURITY_BUFFER_TOO_SMALL:
+        return UDS_RESULT_RESPONSE_TOO_LONG;
+    default:
+        return UDS_RESULT_DENIED;
     }
 }
 
-static UdsCallbackResult uds_security_key(void *context, uint8_t level,
-                                          const uint8_t *key, uint16_t length) {
+static UdsCallbackResult uds_security_key(void *context, uint8_t level, const uint8_t *key,
+                                          uint16_t length) {
     UdsRuntime *runtime = (UdsRuntime *)context;
     if (runtime == NULL) {
         return UDS_RESULT_ERROR;
     }
-    UdsSecurityResult result = uds_security_provider_verify_key(
-        &runtime->security, level, key, length, runtime->now_ms);
+    UdsSecurityResult result =
+        uds_security_provider_verify_key(&runtime->security, level, key, length, runtime->now_ms);
     switch (result) {
-        case UDS_SECURITY_OK:
-            return UDS_RESULT_OK;
-        case UDS_SECURITY_INVALID_KEY:
-            return UDS_RESULT_INVALID_KEY;
-        case UDS_SECURITY_ATTEMPTS_EXCEEDED:
-            return UDS_RESULT_ATTEMPTS_EXCEEDED;
-        case UDS_SECURITY_DELAY_ACTIVE:
-            return UDS_RESULT_DELAY_ACTIVE;
-        default:
-            return UDS_RESULT_DENIED;
+    case UDS_SECURITY_OK:
+        return UDS_RESULT_OK;
+    case UDS_SECURITY_INVALID_KEY:
+        return UDS_RESULT_INVALID_KEY;
+    case UDS_SECURITY_ATTEMPTS_EXCEEDED:
+        return UDS_RESULT_ATTEMPTS_EXCEEDED;
+    case UDS_SECURITY_DELAY_ACTIVE:
+        return UDS_RESULT_DELAY_ACTIVE;
+    default:
+        return UDS_RESULT_DENIED;
     }
 }
 
-static UdsCallbackResult uds_communication_control(void *context,
-                                                    uint8_t subfunction,
-                                                    uint8_t communication_type) {
+static UdsCallbackResult uds_communication_control(void *context, uint8_t subfunction,
+                                                   uint8_t communication_type) {
     (void)context;
     (void)subfunction;
     (void)communication_type;
@@ -169,12 +163,9 @@ static UdsCallbackResult uds_communication_control(void *context,
 }
 
 static UdsCallbackResult uds_routine_control(void *context, uint8_t subfunction,
-                                              uint16_t routine_id,
-                                              const uint8_t *request,
-                                              uint16_t request_len,
-                                              uint8_t *response,
-                                              uint16_t *response_len,
-                                              uint16_t capacity) {
+                                             uint16_t routine_id, const uint8_t *request,
+                                             uint16_t request_len, uint8_t *response,
+                                             uint16_t *response_len, uint16_t capacity) {
     (void)context;
     (void)subfunction;
     (void)routine_id;
@@ -199,20 +190,18 @@ static UdsCallbackResult uds_ecu_reset(void *context, uint8_t subfunction) {
 
 static UdsCallbackResult uds_dtc_setting(void *context, uint8_t subfunction) {
     (void)context;
-    return ((subfunction == 0x01U) || (subfunction == 0x02U))
-               ? UDS_RESULT_OK
-               : UDS_RESULT_NOT_SUPPORTED;
+    return ((subfunction == 0x01U) || (subfunction == 0x02U)) ? UDS_RESULT_OK
+                                                              : UDS_RESULT_NOT_SUPPORTED;
 }
 
-static UdsCallbackResult uds_request_download(void *context, uint32_t address,
-                                               uint32_t length,
-                                               uint16_t *max_block_length) {
+static UdsCallbackResult uds_request_download(void *context, uint32_t address, uint32_t length,
+                                              uint16_t *max_block_length) {
     UdsRuntime *runtime = (UdsRuntime *)context;
     if ((runtime == NULL) || (max_block_length == NULL)) {
         return UDS_RESULT_ERROR;
     }
-    UdsDownloadResult result = uds_download_begin(&runtime->download, address, length,
-                                                  runtime->now_ms);
+    UdsDownloadResult result =
+        uds_download_begin(&runtime->download, address, length, runtime->now_ms);
     if (result != UDS_DOWNLOAD_OK) {
         return UDS_RESULT_OUT_OF_RANGE;
     }
@@ -226,9 +215,8 @@ static UdsCallbackResult uds_transfer_data(void *context, uint8_t block_sequence
     if (runtime == NULL) {
         return UDS_RESULT_ERROR;
     }
-    UdsDownloadResult result = uds_download_write(&runtime->download,
-                                                  block_sequence_counter, data, length,
-                                                  runtime->now_ms);
+    UdsDownloadResult result = uds_download_write(&runtime->download, block_sequence_counter, data,
+                                                  length, runtime->now_ms);
     return (result == UDS_DOWNLOAD_OK) ? UDS_RESULT_OK : UDS_RESULT_PROGRAMMING_FAILURE;
 }
 
@@ -236,22 +224,20 @@ static UdsCallbackResult uds_transfer_exit(void *context, const uint8_t *request
                                            uint16_t request_len, uint8_t *response,
                                            uint16_t *response_len, uint16_t capacity) {
     UdsRuntime *runtime = (UdsRuntime *)context;
-    if ((runtime == NULL) || (response == NULL) || (response_len == NULL) ||
-        (capacity < 1U)) {
+    if ((runtime == NULL) || (response == NULL) || (response_len == NULL) || (capacity < 1U)) {
         return UDS_RESULT_ERROR;
     }
     uint32_t expected_crc32 = 0U;
     bool has_crc = false;
     if (request_len == 5U) {
-        expected_crc32 = ((uint32_t)request[1] << 24U) |
-                         ((uint32_t)request[2] << 16U) |
+        expected_crc32 = ((uint32_t)request[1] << 24U) | ((uint32_t)request[2] << 16U) |
                          ((uint32_t)request[3] << 8U) | request[4];
         has_crc = true;
     } else if (request_len != 1U) {
         return UDS_RESULT_ERROR;
     }
-    UdsDownloadResult result = uds_download_finish(&runtime->download, expected_crc32,
-                                                   has_crc, runtime->now_ms);
+    UdsDownloadResult result =
+        uds_download_finish(&runtime->download, expected_crc32, has_crc, runtime->now_ms);
     if (result != UDS_DOWNLOAD_OK) {
         return UDS_RESULT_PROGRAMMING_FAILURE;
     }
@@ -271,19 +257,31 @@ static void fill_project_dids(UdsRuntime *runtime) {
     (void)memcpy(runtime->bootloader_version, bootloader, sizeof(bootloader) - 1U);
     (void)memcpy(runtime->serial_number, serial, sizeof(serial) - 1U);
     (void)memcpy(runtime->device_identity, identity, sizeof(identity) - 1U);
-    runtime->did_source.software_version = (UdsDidValue){runtime->software_version, (uint16_t)(sizeof(software) - 1U)};
-    runtime->did_source.hardware_version = (UdsDidValue){runtime->hardware_version, (uint16_t)(sizeof(hardware) - 1U)};
-    runtime->did_source.bootloader_version = (UdsDidValue){runtime->bootloader_version, (uint16_t)(sizeof(bootloader) - 1U)};
-    runtime->did_source.serial_number = (UdsDidValue){runtime->serial_number, (uint16_t)(sizeof(serial) - 1U)};
-    runtime->did_source.device_identity = (UdsDidValue){runtime->device_identity, (uint16_t)(sizeof(identity) - 1U)};
+    runtime->did_source.software_version =
+        (UdsDidValue){runtime->software_version, (uint16_t)(sizeof(software) - 1U)};
+    runtime->did_source.hardware_version =
+        (UdsDidValue){runtime->hardware_version, (uint16_t)(sizeof(hardware) - 1U)};
+    runtime->did_source.bootloader_version =
+        (UdsDidValue){runtime->bootloader_version, (uint16_t)(sizeof(bootloader) - 1U)};
+    runtime->did_source.serial_number =
+        (UdsDidValue){runtime->serial_number, (uint16_t)(sizeof(serial) - 1U)};
+    runtime->did_source.device_identity =
+        (UdsDidValue){runtime->device_identity, (uint16_t)(sizeof(identity) - 1U)};
     runtime->did_source.canopen_node_id = (UdsDidValue){&runtime->canopen_node_id, 1U};
-    runtime->did_source.can_bitrate = (UdsDidValue){runtime->can_bitrate, sizeof(runtime->can_bitrate)};
-    runtime->did_source.diagnostic_status = (UdsDidValue){runtime->diagnostic_status, sizeof(runtime->diagnostic_status)};
-    runtime->did_source.firmware_status = (UdsDidValue){runtime->firmware_status, sizeof(runtime->firmware_status)};
-    runtime->did_source.reset_cause = (UdsDidValue){runtime->reset_cause, sizeof(runtime->reset_cause)};
-    runtime->did_source.watchdog_status = (UdsDidValue){runtime->watchdog_status, sizeof(runtime->watchdog_status)};
-    runtime->did_source.can_error_counters = (UdsDidValue){runtime->can_error_counters, sizeof(runtime->can_error_counters)};
-    runtime->did_source.canopen_error_state = (UdsDidValue){runtime->canopen_error_state, sizeof(runtime->canopen_error_state)};
+    runtime->did_source.can_bitrate =
+        (UdsDidValue){runtime->can_bitrate, sizeof(runtime->can_bitrate)};
+    runtime->did_source.diagnostic_status =
+        (UdsDidValue){runtime->diagnostic_status, sizeof(runtime->diagnostic_status)};
+    runtime->did_source.firmware_status =
+        (UdsDidValue){runtime->firmware_status, sizeof(runtime->firmware_status)};
+    runtime->did_source.reset_cause =
+        (UdsDidValue){runtime->reset_cause, sizeof(runtime->reset_cause)};
+    runtime->did_source.watchdog_status =
+        (UdsDidValue){runtime->watchdog_status, sizeof(runtime->watchdog_status)};
+    runtime->did_source.can_error_counters =
+        (UdsDidValue){runtime->can_error_counters, sizeof(runtime->can_error_counters)};
+    runtime->did_source.canopen_error_state =
+        (UdsDidValue){runtime->canopen_error_state, sizeof(runtime->canopen_error_state)};
     runtime->canopen_node_id = 1U;
     runtime->can_bitrate[0] = 0x00U;
     runtime->can_bitrate[1] = 0x07U;
@@ -371,8 +369,7 @@ void CANopenReference_UDS_Process(uint32_t now_ms) {
         IsoTpCanFrame frame = {0};
         uint32_t rx_start = CANopenReferenceTiming_PhaseEnter();
         int rx_result = uds_stm32_can_rx_pop(&s_uds.can, &frame);
-        CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_rx_cycles_max,
-                                         rx_start);
+        CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_rx_cycles_max, rx_start);
         if (rx_result != 1) {
             break;
         }
@@ -388,20 +385,19 @@ void CANopenReference_UDS_Process(uint32_t now_ms) {
             if (status == ISOTP_COMPLETE && (event.payload != NULL)) {
                 s_uds.response_length = 0U;
                 uint32_t dispatch_start = CANopenReferenceTiming_PhaseEnter();
-                UdsCallbackResult result = uds_server_handle(
-                    &s_uds.server, event.payload, event.length, s_uds.response,
-                    &s_uds.response_length, sizeof(s_uds.response), now_ms);
-                CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_dispatch_cycles_max,
-                                                 dispatch_start);
+                UdsCallbackResult result =
+                    uds_server_handle(&s_uds.server, event.payload, event.length, s_uds.response,
+                                      &s_uds.response_length, sizeof(s_uds.response), now_ms);
+                CANopenReferenceTiming_PhaseExit(
+                    &canopenReferenceTimingStats.uds_dispatch_cycles_max, dispatch_start);
                 if ((result == UDS_RESULT_OK) && (s_uds.response_length != 0U)) {
                     IsoTpCanFrame tx_frame = {0};
-                    if (isotp_tx_start(&s_uds.isotp_tx, s_uds.response,
-                                       s_uds.response_length, now_ms, &tx_frame)
-                        == ISOTP_TX_FRAME_READY) {
+                    if (isotp_tx_start(&s_uds.isotp_tx, s_uds.response, s_uds.response_length,
+                                       now_ms, &tx_frame) == ISOTP_TX_FRAME_READY) {
                         uint32_t tx_start = CANopenReferenceTiming_PhaseEnter();
                         queue_tx_frame(&tx_frame);
-                        CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_tx_cycles_max,
-                                                         tx_start);
+                        CANopenReferenceTiming_PhaseExit(
+                            &canopenReferenceTimingStats.uds_tx_cycles_max, tx_start);
                     }
                 }
             }
@@ -413,13 +409,11 @@ void CANopenReference_UDS_Process(uint32_t now_ms) {
     IsoTpCanFrame next_frame = {0};
     uint32_t isotp_tx_start = CANopenReferenceTiming_PhaseEnter();
     IsoTpStatus tx_status = isotp_tx_next(&s_uds.isotp_tx, now_ms, &next_frame);
-    CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.isotp_cycles_max,
-                                     isotp_tx_start);
+    CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.isotp_cycles_max, isotp_tx_start);
     if (tx_status == ISOTP_TX_FRAME_READY) {
         uint32_t tx_start = CANopenReferenceTiming_PhaseEnter();
         queue_tx_frame(&next_frame);
-        CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_tx_cycles_max,
-                                         tx_start);
+        CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_tx_cycles_max, tx_start);
     }
     if (isotp_rx_tick(&s_uds.isotp_rx, now_ms) == ISOTP_ERR_TIMEOUT) {
         uds_stm32_can_note_rx_timeout(&s_uds.can);
@@ -429,8 +423,7 @@ void CANopenReference_UDS_Process(uint32_t now_ms) {
     }
     uint32_t tx_start = CANopenReferenceTiming_PhaseEnter();
     (void)uds_stm32_can_process_tx(&s_uds.can, UDS_STM32_TX_BUDGET_PER_CALL);
-    CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_tx_cycles_max,
-                                     tx_start);
+    CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_tx_cycles_max, tx_start);
     CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_mainline_cycles_max,
                                      uds_mainline_start);
 }

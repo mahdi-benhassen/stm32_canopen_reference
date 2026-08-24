@@ -71,8 +71,8 @@ typedef struct {
     bool bound;
 } UdsStm32Can;
 
-int uds_stm32_can_bind(UdsStm32Can *adapter, CAN_HandleTypeDef *hcan,
-                       uint32_t request_id, uint32_t response_id);
+int uds_stm32_can_bind(UdsStm32Can *adapter, CAN_HandleTypeDef *hcan, uint32_t request_id,
+                       uint32_t response_id);
 /* Attach to the board-owned HAL RX callback registration. This does not start,
  * stop, configure, or reconfigure the CAN controller. */
 int uds_stm32_can_attach(UdsStm32Can *adapter);
@@ -80,8 +80,7 @@ void uds_stm32_can_detach(UdsStm32Can *adapter);
 void uds_stm32_can_reset(UdsStm32Can *adapter);
 
 /* ISR-safe receive handoff. It only validates, copies, counts, and publishes. */
-void uds_stm32_can_rx_from_isr(UdsStm32Can *adapter, uint32_t id,
-                               const uint8_t *data, uint8_t dlc);
+void uds_stm32_can_rx_from_isr(UdsStm32Can *adapter, uint32_t id, const uint8_t *data, uint8_t dlc);
 
 /* Mainline-only queue consumers/producers. */
 int uds_stm32_can_rx_pop(UdsStm32Can *adapter, IsoTpCanFrame *frame);
@@ -91,8 +90,7 @@ int uds_stm32_can_process_tx(UdsStm32Can *adapter, uint32_t budget);
 /* These are intended for the existing HAL/CANopen error and timeout paths. */
 void uds_stm32_can_note_rx_timeout(UdsStm32Can *adapter);
 void uds_stm32_can_note_tx_timeout(UdsStm32Can *adapter);
-void uds_stm32_can_note_error(UdsStm32Can *adapter, uint32_t hal_error,
-                              bool bus_off);
+void uds_stm32_can_note_error(UdsStm32Can *adapter, uint32_t hal_error, bool bus_off);
 void uds_stm32_can_get_stats(const UdsStm32Can *adapter, UdsStm32CanStats *stats);
 
 /* The existing CANopen filter owner calls this while constructing its bounded

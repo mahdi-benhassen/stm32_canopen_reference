@@ -16,8 +16,7 @@ static uint32_t next_state(uint32_t value) {
     return (value == 0U) ? 0xA5A5A5A5UL : value;
 }
 
-static uint8_t constant_time_equal(const uint8_t *left, const uint8_t *right,
-                                   uint8_t length) {
+static uint8_t constant_time_equal(const uint8_t *left, const uint8_t *right, uint8_t length) {
     uint8_t difference = 0U;
     for (uint8_t index = 0U; index < length; ++index) {
         difference |= (uint8_t)(left[index] ^ right[index]);
@@ -25,25 +24,20 @@ static uint8_t constant_time_equal(const uint8_t *left, const uint8_t *right,
     return difference == 0U;
 }
 
-void uds_security_provider_init(UdsSecurityProvider *provider,
-                                uint32_t deterministic_seed,
-                                uint8_t maximum_attempts,
-                                uint32_t lockout_ms) {
+void uds_security_provider_init(UdsSecurityProvider *provider, uint32_t deterministic_seed,
+                                uint8_t maximum_attempts, uint32_t lockout_ms) {
     if (provider == NULL) {
         return;
     }
     provider->key_length = 0U;
     provider->security_level = 0U;
     provider->failed_attempts = 0U;
-    provider->maximum_attempts = (maximum_attempts == 0U)
-                                     ? UDS_SECURITY_PROVIDER_DEFAULT_MAX_ATTEMPTS
-                                     : maximum_attempts;
-    provider->lockout_ms = (lockout_ms == 0U) ? UDS_SECURITY_PROVIDER_DEFAULT_LOCKOUT_MS
-                                              : lockout_ms;
+    provider->maximum_attempts =
+        (maximum_attempts == 0U) ? UDS_SECURITY_PROVIDER_DEFAULT_MAX_ATTEMPTS : maximum_attempts;
+    provider->lockout_ms =
+        (lockout_ms == 0U) ? UDS_SECURITY_PROVIDER_DEFAULT_LOCKOUT_MS : lockout_ms;
     provider->lockout_until_ms = 0U;
-    provider->deterministic_state = (deterministic_seed == 0U)
-                                        ? 0x13579BDFUL
-                                        : deterministic_seed;
+    provider->deterministic_state = (deterministic_seed == 0U) ? 0x13579BDFUL : deterministic_seed;
     provider->seed_valid = false;
     for (uint8_t index = 0U; index < UDS_SECURITY_PROVIDER_SEED_LENGTH; ++index) {
         provider->seed[index] = 0U;
@@ -53,17 +47,13 @@ void uds_security_provider_init(UdsSecurityProvider *provider,
     }
 }
 
-bool uds_security_provider_is_locked(const UdsSecurityProvider *provider,
-                                     uint32_t now_ms) {
+bool uds_security_provider_is_locked(const UdsSecurityProvider *provider, uint32_t now_ms) {
     return (provider != NULL) && deadline_active(now_ms, provider->lockout_until_ms);
 }
 
-UdsSecurityResult uds_security_provider_generate_seed(UdsSecurityProvider *provider,
-                                                       uint8_t level,
-                                                       uint8_t *seed,
-                                                       uint16_t *length,
-                                                       uint16_t capacity,
-                                                       uint32_t now_ms) {
+UdsSecurityResult uds_security_provider_generate_seed(UdsSecurityProvider *provider, uint8_t level,
+                                                      uint8_t *seed, uint16_t *length,
+                                                      uint16_t capacity, uint32_t now_ms) {
     if ((provider == NULL) || (seed == NULL) || (length == NULL) || (level == 0U)) {
         return UDS_SECURITY_INVALID_ARGUMENT;
     }
@@ -81,8 +71,8 @@ UdsSecurityResult uds_security_provider_generate_seed(UdsSecurityProvider *provi
     }
     /* Test-only key derivation: XOR the seed with a fixed test constant. This
      * is deliberately not a production security algorithm. */
-    static const uint8_t test_mask[UDS_SECURITY_PROVIDER_SEED_LENGTH] =
-        {0xA5U, 0x5AU, 0xC3U, 0x3CU};
+    static const uint8_t test_mask[UDS_SECURITY_PROVIDER_SEED_LENGTH] = {0xA5U, 0x5AU, 0xC3U,
+                                                                         0x3CU};
     for (uint8_t index = 0U; index < UDS_SECURITY_PROVIDER_SEED_LENGTH; ++index) {
         provider->key[index] = (uint8_t)(provider->seed[index] ^ test_mask[index]);
     }
@@ -92,10 +82,8 @@ UdsSecurityResult uds_security_provider_generate_seed(UdsSecurityProvider *provi
     return UDS_SECURITY_OK;
 }
 
-UdsSecurityResult uds_security_provider_verify_key(UdsSecurityProvider *provider,
-                                                   uint8_t level,
-                                                   const uint8_t *key,
-                                                   uint16_t length,
+UdsSecurityResult uds_security_provider_verify_key(UdsSecurityProvider *provider, uint8_t level,
+                                                   const uint8_t *key, uint16_t length,
                                                    uint32_t now_ms) {
     if ((provider == NULL) || (key == NULL) || (level == 0U)) {
         return UDS_SECURITY_INVALID_ARGUMENT;

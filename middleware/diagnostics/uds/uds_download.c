@@ -10,8 +10,7 @@ static bool time_expired(uint32_t now_ms, uint32_t deadline_ms) {
     return (int32_t)(now_ms - deadline_ms) >= 0;
 }
 
-static bool range_inside(UdsDownloadRegion region, uint32_t address,
-                         uint32_t length) {
+static bool range_inside(UdsDownloadRegion region, uint32_t address, uint32_t length) {
     if (length == 0U || address < region.start || region.end_exclusive < region.start) {
         return false;
     }
@@ -31,17 +30,14 @@ static uint32_t crc32_update(uint32_t crc, const uint8_t *data, uint16_t length)
     for (uint16_t index = 0U; index < length; ++index) {
         value ^= data[index];
         for (uint8_t bit = 0U; bit < 8U; ++bit) {
-            value = ((value & 1U) != 0U) ? ((value >> 1U) ^ 0xEDB88320UL)
-                                         : (value >> 1U);
+            value = ((value & 1U) != 0U) ? ((value >> 1U) ^ 0xEDB88320UL) : (value >> 1U);
         }
     }
     return value;
 }
 
-void uds_download_init(UdsDownload *download,
-                       const UdsDownloadMemoryMap *memory,
-                       const UdsDownloadCallbacks *callbacks,
-                       void *context) {
+void uds_download_init(UdsDownload *download, const UdsDownloadMemoryMap *memory,
+                       const UdsDownloadCallbacks *callbacks, void *context) {
     if (download == NULL) {
         return;
     }
@@ -55,8 +51,8 @@ void uds_download_init(UdsDownload *download,
     download->crc32 = 0xFFFFFFFFUL;
 }
 
-UdsDownloadResult uds_download_begin(UdsDownload *download, uint32_t address,
-                                     uint32_t length, uint32_t now_ms) {
+UdsDownloadResult uds_download_begin(UdsDownload *download, uint32_t address, uint32_t length,
+                                     uint32_t now_ms) {
     if ((download == NULL) || (download->callbacks.erase_start == NULL) ||
         (download->callbacks.erase_poll == NULL) || (download->callbacks.program == NULL) ||
         (download->callbacks.verify_image == NULL)) {
@@ -99,8 +95,7 @@ UdsDownloadResult uds_download_begin(UdsDownload *download, uint32_t address,
     return UDS_DOWNLOAD_OK;
 }
 
-UdsDownloadResult uds_download_poll_erase(UdsDownload *download,
-                                          uint32_t now_ms) {
+UdsDownloadResult uds_download_poll_erase(UdsDownload *download, uint32_t now_ms) {
     if ((download == NULL) || (download->state != UDS_DOWNLOAD_ERASING) ||
         (download->callbacks.erase_poll == NULL)) {
         return UDS_DOWNLOAD_NOT_READY;
@@ -120,12 +115,10 @@ UdsDownloadResult uds_download_poll_erase(UdsDownload *download,
     return result;
 }
 
-UdsDownloadResult uds_download_write(UdsDownload *download, uint8_t block,
-                                     const uint8_t *data, uint16_t length,
-                                     uint32_t now_ms) {
+UdsDownloadResult uds_download_write(UdsDownload *download, uint8_t block, const uint8_t *data,
+                                     uint16_t length, uint32_t now_ms) {
     if ((download == NULL) || (data == NULL) || (length == 0U) ||
-        (length > UDS_DOWNLOAD_MAX_CHUNK_LENGTH) ||
-        (download->state != UDS_DOWNLOAD_RECEIVING) ||
+        (length > UDS_DOWNLOAD_MAX_CHUNK_LENGTH) || (download->state != UDS_DOWNLOAD_RECEIVING) ||
         (download->callbacks.program == NULL)) {
         return UDS_DOWNLOAD_NOT_READY;
     }
@@ -144,7 +137,8 @@ UdsDownloadResult uds_download_write(UdsDownload *download, uint8_t block,
         return UDS_DOWNLOAD_ALIGNMENT_ERROR;
     }
     uint32_t address = download->metadata.image_address + download->metadata.received_length;
-    UdsDownloadResult result = download->callbacks.program(download->context, address, data, length);
+    UdsDownloadResult result =
+        download->callbacks.program(download->context, address, data, length);
     if (result != UDS_DOWNLOAD_OK) {
         return UDS_DOWNLOAD_PROGRAM_ERROR;
     }
@@ -159,8 +153,7 @@ UdsDownloadResult uds_download_write(UdsDownload *download, uint8_t block,
     return UDS_DOWNLOAD_OK;
 }
 
-UdsDownloadResult uds_download_finish(UdsDownload *download,
-                                      uint32_t expected_crc32,
+UdsDownloadResult uds_download_finish(UdsDownload *download, uint32_t expected_crc32,
                                       bool has_expected_crc32, uint32_t now_ms) {
     if ((download == NULL) || (download->state != UDS_DOWNLOAD_RECEIVING) ||
         (download->metadata.received_length != download->metadata.image_length) ||
@@ -172,8 +165,8 @@ UdsDownloadResult uds_download_finish(UdsDownload *download,
         return UDS_DOWNLOAD_TIMEOUT;
     }
     download->state = UDS_DOWNLOAD_VERIFYING;
-    download->metadata.crc_valid = !has_expected_crc32 ||
-                                   ((download->crc32 ^ 0xFFFFFFFFUL) == expected_crc32);
+    download->metadata.crc_valid =
+        !has_expected_crc32 || ((download->crc32 ^ 0xFFFFFFFFUL) == expected_crc32);
     if (!download->metadata.crc_valid) {
         uds_download_abort(download);
         return UDS_DOWNLOAD_VERIFY_ERROR;

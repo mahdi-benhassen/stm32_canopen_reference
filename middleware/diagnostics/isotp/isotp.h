@@ -23,6 +23,10 @@
 #define ISOTP_DEFAULT_TX_TIMEOUT_MS 1000U
 #endif
 
+#ifndef ISOTP_DEFAULT_MAX_WAIT_FRAMES
+#define ISOTP_DEFAULT_MAX_WAIT_FRAMES 3U
+#endif
+
 typedef struct {
     uint32_t can_id;
     uint8_t dlc;
@@ -54,6 +58,7 @@ typedef struct {
     uint8_t st_min;
     uint32_t rx_timeout_ms;
     uint32_t tx_timeout_ms;
+    uint8_t max_wait_frames;
 } IsoTpConfig;
 
 typedef struct {
@@ -84,6 +89,7 @@ typedef struct {
     uint32_t next_frame_ms;
     bool active;
     bool waiting_flow_control;
+    uint8_t wait_frames;
 } IsoTpTx;
 
 typedef struct {
@@ -96,17 +102,16 @@ typedef struct {
 void isotp_config_default(IsoTpConfig *config);
 void isotp_rx_init(IsoTpRx *rx, const IsoTpConfig *config, uint32_t request_id,
                    uint32_t response_id);
-IsoTpStatus isotp_rx_feed(IsoTpRx *rx, const IsoTpCanFrame *frame,
-                          uint32_t now_ms, IsoTpRxEvent *event);
+IsoTpStatus isotp_rx_feed(IsoTpRx *rx, const IsoTpCanFrame *frame, uint32_t now_ms,
+                          IsoTpRxEvent *event);
 IsoTpStatus isotp_rx_tick(IsoTpRx *rx, uint32_t now_ms);
 void isotp_rx_reset(IsoTpRx *rx);
 
 void isotp_tx_init(IsoTpTx *tx, const IsoTpConfig *config, uint32_t request_id,
                    uint32_t response_id);
-IsoTpStatus isotp_tx_start(IsoTpTx *tx, const uint8_t *payload, uint16_t length,
-                           uint32_t now_ms, IsoTpCanFrame *frame);
-IsoTpStatus isotp_tx_feed_flow_control(IsoTpTx *tx, const IsoTpCanFrame *frame,
-                                       uint32_t now_ms);
+IsoTpStatus isotp_tx_start(IsoTpTx *tx, const uint8_t *payload, uint16_t length, uint32_t now_ms,
+                           IsoTpCanFrame *frame);
+IsoTpStatus isotp_tx_feed_flow_control(IsoTpTx *tx, const IsoTpCanFrame *frame, uint32_t now_ms);
 IsoTpStatus isotp_tx_next(IsoTpTx *tx, uint32_t now_ms, IsoTpCanFrame *frame);
 IsoTpStatus isotp_tx_tick(IsoTpTx *tx, uint32_t now_ms);
 void isotp_tx_reset(IsoTpTx *tx);

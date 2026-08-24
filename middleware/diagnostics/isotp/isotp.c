@@ -42,6 +42,7 @@ void isotp_config_default(IsoTpConfig *config) {
     config->st_min = 0U;
     config->rx_timeout_ms = ISOTP_DEFAULT_RX_TIMEOUT_MS;
     config->tx_timeout_ms = ISOTP_DEFAULT_TX_TIMEOUT_MS;
+    config->max_wait_frames = ISOTP_DEFAULT_MAX_WAIT_FRAMES;
 }
 
 void isotp_rx_init(IsoTpRx *rx, const IsoTpConfig *config, uint32_t request_id,
@@ -79,10 +80,9 @@ static void rx_make_flow_control(const IsoTpRx *rx, IsoTpRxEvent *event) {
     event->has_flow_control = true;
 }
 
-IsoTpStatus isotp_rx_feed(IsoTpRx *rx, const IsoTpCanFrame *frame,
-                          uint32_t now_ms, IsoTpRxEvent *event) {
-    if ((rx == NULL) || (frame == NULL) || (event == NULL) ||
-        (frame->dlc > ISOTP_MAX_FRAME_DATA)) {
+IsoTpStatus isotp_rx_feed(IsoTpRx *rx, const IsoTpCanFrame *frame, uint32_t now_ms,
+                          IsoTpRxEvent *event) {
+    if ((rx == NULL) || (frame == NULL) || (event == NULL) || (frame->dlc > ISOTP_MAX_FRAME_DATA)) {
         return ISOTP_ERR_ARGUMENT;
     }
     event->payload = NULL;
@@ -98,7 +98,7 @@ IsoTpStatus isotp_rx_feed(IsoTpRx *rx, const IsoTpCanFrame *frame,
     uint8_t pci_type = (uint8_t)(frame->data[0] >> 4U);
     if (pci_type == 0U) {
         uint8_t length = (uint8_t)(frame->data[0] & 0x0FU);
-        if ((length > 7U) || ((uint16_t)length > (uint16_t)frame->dlc - 1U)) {
+        if ((length == 0U) || (length > 7U) || ((uint16_t)length > (uint16_t)frame->dlc - 1U)) {
             return ISOTP_ERR_FORMAT;
         }
         isotp_rx_reset(rx);
@@ -114,8 +114,7 @@ IsoTpStatus isotp_rx_feed(IsoTpRx *rx, const IsoTpCanFrame *frame,
         if (frame->dlc < 2U) {
             return ISOTP_ERR_FORMAT;
         }
-        uint16_t length = (uint16_t)(((uint16_t)(frame->data[0] & 0x0FU) << 8U) |
-                                     frame->data[1]);
+        uint16_t length = (uint16_t)(((uint16_t)(frame->data[0] & 0x0FU) << 8U) | frame->data[1]);
         if ((length <= 7U) || (length > ISOTP_MAX_PAYLOAD)) {
             isotp_rx_reset(rx);
             return (length > ISOTP_MAX_PAYLOAD) ? ISOTP_ERR_OVERFLOW : ISOTP_ERR_FORMAT;
@@ -158,8 +157,7 @@ IsoTpStatus isotp_rx_feed(IsoTpRx *rx, const IsoTpCanFrame *frame,
             rx->active = false;
             return ISOTP_COMPLETE;
         }
-        if ((rx->config.block_size != 0U) &&
-            (rx->block_count >= rx->config.block_size)) {
+        if ((rx->config.block_size != 0U) && (rx->block_count >= rx->config.block_size)) {
             rx->block_count = 0U;
             rx_make_flow_control(rx, event);
             return ISOTP_NEED_FLOW_CONTROL;
@@ -210,10 +208,11 @@ void isotp_tx_reset(IsoTpTx *tx) {
     tx->next_frame_ms = 0U;
     tx->active = false;
     tx->waiting_flow_control = false;
+    tx->wait_frames = 0U;
 }
 
-IsoTpStatus isotp_tx_start(IsoTpTx *tx, const uint8_t *payload, uint16_t length,
-                           uint32_t now_ms, IsoTpCanFrame *frame) {
+IsoTpStatus isotp_tx_start(IsoTpTx *tx, const uint8_t *payload, uint16_t length, uint32_t now_ms,
+                           IsoTpCanFrame *frame) {
     if ((tx == NULL) || (payload == NULL) || (frame == NULL) || (length == 0U)) {
         return ISOTP_ERR_ARGUMENT;
     }
@@ -251,8 +250,7 @@ IsoTpStatus isotp_tx_start(IsoTpTx *tx, const uint8_t *payload, uint16_t length,
     return ISOTP_TX_FRAME_READY;
 }
 
-IsoTpStatus isotp_tx_feed_flow_control(IsoTpTx *tx, const IsoTpCanFrame *frame,
-                                       uint32_t now_ms) {
+IsoTpStatus isotp_tx_feed_flow_control(IsoTpTx *tx, const IsoTpCanFrame *frame, uint32_t now_ms) {
     if ((tx == NULL) || (frame == NULL) || (frame->dlc > ISOTP_MAX_FRAME_DATA)) {
         return ISOTP_ERR_ARGUMENT;
     }
@@ -280,9 +278,15 @@ IsoTpStatus isotp_tx_feed_flow_control(IsoTpTx *tx, const IsoTpCanFrame *frame,
     tx->remote_st_min = st_min;
     tx->deadline_ms = add_timeout(now_ms, tx->config.tx_timeout_ms);
     if (flow_status == ISOTP_FC_WAIT) {
+        if (tx->wait_frames >= tx->config.max_wait_frames) {
+            isotp_tx_reset(tx);
+            return ISOTP_ERR_FLOW_CONTROL;
+        }
+        tx->wait_frames = (uint8_t)(tx->wait_frames + 1U);
         tx->waiting_flow_control = true;
         return ISOTP_OK;
     }
+    tx->wait_frames = 0U;
     tx->waiting_flow_control = false;
     tx->block_count = 0U;
     tx->next_frame_ms = now_ms;
@@ -323,8 +327,7 @@ IsoTpStatus isotp_tx_next(IsoTpTx *tx, uint32_t now_ms, IsoTpCanFrame *frame) {
     tx->block_count = (uint8_t)(tx->block_count + 1U);
     tx->deadline_ms = add_timeout(now_ms, tx->config.tx_timeout_ms);
     tx->next_frame_ms = now_ms + st_min_to_ms(tx->remote_st_min);
-    if ((tx->remote_block_size != 0U) &&
-        (tx->block_count >= tx->remote_block_size) &&
+    if ((tx->remote_block_size != 0U) && (tx->block_count >= tx->remote_block_size) &&
         (tx->offset < tx->payload_len)) {
         tx->block_count = 0U;
         tx->waiting_flow_control = true;

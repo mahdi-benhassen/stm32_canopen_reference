@@ -109,48 +109,33 @@ typedef enum {
     UDS_RESULT_ERROR
 } UdsCallbackResult;
 
-typedef UdsCallbackResult (*UdsReadDidFn)(void *context, uint16_t did,
-                                           uint8_t *data, uint16_t *length,
-                                           uint16_t capacity);
-typedef UdsCallbackResult (*UdsWriteDidFn)(void *context, uint16_t did,
-                                            const uint8_t *data, uint16_t length);
-typedef UdsCallbackResult (*UdsDtcFn)(void *context, uint8_t subfunction,
-                                      const uint8_t *request, uint16_t request_len,
-                                      uint8_t *response, uint16_t *response_len,
-                                      uint16_t capacity);
-typedef UdsCallbackResult (*UdsSecuritySeedFn)(void *context, uint8_t level,
-                                                uint8_t *seed, uint16_t *length,
-                                                uint16_t capacity);
-typedef UdsCallbackResult (*UdsSecurityKeyFn)(void *context, uint8_t level,
-                                               const uint8_t *key, uint16_t length);
-typedef UdsCallbackResult (*UdsCommunicationControlFn)(void *context,
-                                                       uint8_t subfunction,
+typedef UdsCallbackResult (*UdsReadDidFn)(void *context, uint16_t did, uint8_t *data,
+                                          uint16_t *length, uint16_t capacity);
+typedef UdsCallbackResult (*UdsWriteDidFn)(void *context, uint16_t did, const uint8_t *data,
+                                           uint16_t length);
+typedef UdsCallbackResult (*UdsDtcFn)(void *context, uint8_t subfunction, const uint8_t *request,
+                                      uint16_t request_len, uint8_t *response,
+                                      uint16_t *response_len, uint16_t capacity);
+typedef UdsCallbackResult (*UdsSecuritySeedFn)(void *context, uint8_t level, uint8_t *seed,
+                                               uint16_t *length, uint16_t capacity);
+typedef UdsCallbackResult (*UdsSecurityKeyFn)(void *context, uint8_t level, const uint8_t *key,
+                                              uint16_t length);
+typedef UdsCallbackResult (*UdsCommunicationControlFn)(void *context, uint8_t subfunction,
                                                        uint8_t communication_type);
-typedef UdsCallbackResult (*UdsIoControlFn)(void *context, uint16_t did,
-                                             const uint8_t *parameter,
-                                             uint16_t parameter_len,
-                                             uint8_t *response,
-                                             uint16_t *response_len,
-                                             uint16_t capacity);
-typedef UdsCallbackResult (*UdsRoutineFn)(void *context, uint8_t subfunction,
-                                           uint16_t routine_id,
-                                           const uint8_t *request,
-                                           uint16_t request_len,
-                                           uint8_t *response,
-                                           uint16_t *response_len,
-                                           uint16_t capacity);
-typedef UdsCallbackResult (*UdsDownloadRequestFn)(void *context, uint32_t address,
-                                                   uint32_t length,
-                                                   uint16_t *max_block_length);
-typedef UdsCallbackResult (*UdsTransferDataFn)(void *context,
-                                               uint8_t block_sequence_counter,
+typedef UdsCallbackResult (*UdsIoControlFn)(void *context, uint16_t did, const uint8_t *parameter,
+                                            uint16_t parameter_len, uint8_t *response,
+                                            uint16_t *response_len, uint16_t capacity);
+typedef UdsCallbackResult (*UdsRoutineFn)(void *context, uint8_t subfunction, uint16_t routine_id,
+                                          const uint8_t *request, uint16_t request_len,
+                                          uint8_t *response, uint16_t *response_len,
+                                          uint16_t capacity);
+typedef UdsCallbackResult (*UdsDownloadRequestFn)(void *context, uint32_t address, uint32_t length,
+                                                  uint16_t *max_block_length);
+typedef UdsCallbackResult (*UdsTransferDataFn)(void *context, uint8_t block_sequence_counter,
                                                const uint8_t *data, uint16_t length);
-typedef UdsCallbackResult (*UdsTransferExitFn)(void *context,
-                                               const uint8_t *request,
-                                               uint16_t request_len,
-                                               uint8_t *response,
-                                               uint16_t *response_len,
-                                               uint16_t capacity);
+typedef UdsCallbackResult (*UdsTransferExitFn)(void *context, const uint8_t *request,
+                                               uint16_t request_len, uint8_t *response,
+                                               uint16_t *response_len, uint16_t capacity);
 typedef UdsCallbackResult (*UdsResetFn)(void *context, uint8_t subfunction);
 typedef UdsCallbackResult (*UdsDtcSettingFn)(void *context, uint8_t subfunction);
 
@@ -186,11 +171,10 @@ typedef struct {
     bool dtc_setting_enabled;
 } UdsServer;
 
-void uds_server_init(UdsServer *server, const UdsCallbacks *callbacks,
-                     void *context, uint32_t now_ms);
-UdsCallbackResult uds_server_handle(UdsServer *server, const uint8_t *request,
-                                    uint16_t request_len, uint8_t *response,
-                                    uint16_t *response_len, uint16_t capacity,
+void uds_server_init(UdsServer *server, const UdsCallbacks *callbacks, void *context,
+                     uint32_t now_ms);
+UdsCallbackResult uds_server_handle(UdsServer *server, const uint8_t *request, uint16_t request_len,
+                                    uint8_t *response, uint16_t *response_len, uint16_t capacity,
                                     uint32_t now_ms);
 UdsCallbackResult uds_server_tick(UdsServer *server, uint32_t now_ms);
 void uds_server_reset_security(UdsServer *server);

@@ -75,18 +75,13 @@ typedef struct {
     bool activation_pending;
 } UdsDownloadMetadata;
 
-typedef UdsDownloadResult (*UdsDownloadEraseStartFn)(void *context,
-                                                      uint32_t address,
-                                                      uint32_t length);
+typedef UdsDownloadResult (*UdsDownloadEraseStartFn)(void *context, uint32_t address,
+                                                     uint32_t length);
 typedef UdsDownloadResult (*UdsDownloadErasePollFn)(void *context);
-typedef UdsDownloadResult (*UdsDownloadProgramFn)(void *context,
-                                                   uint32_t address,
-                                                   const uint8_t *data,
-                                                   uint16_t length);
-typedef UdsDownloadResult (*UdsDownloadVerifyFn)(void *context,
-                                                  const UdsDownloadMetadata *metadata,
-                                                  uint32_t expected_crc32,
-                                                  bool has_expected_crc32);
+typedef UdsDownloadResult (*UdsDownloadProgramFn)(void *context, uint32_t address,
+                                                  const uint8_t *data, uint16_t length);
+typedef UdsDownloadResult (*UdsDownloadVerifyFn)(void *context, const UdsDownloadMetadata *metadata,
+                                                 uint32_t expected_crc32, bool has_expected_crc32);
 typedef void (*UdsDownloadAbortFn)(void *context);
 typedef void (*UdsDownloadWatchdogFn)(void *context);
 
@@ -110,19 +105,14 @@ typedef struct {
     uint32_t crc32;
 } UdsDownload;
 
-void uds_download_init(UdsDownload *download,
-                       const UdsDownloadMemoryMap *memory,
-                       const UdsDownloadCallbacks *callbacks,
-                       void *context);
-UdsDownloadResult uds_download_begin(UdsDownload *download, uint32_t address,
-                                     uint32_t length, uint32_t now_ms);
-UdsDownloadResult uds_download_poll_erase(UdsDownload *download,
-                                          uint32_t now_ms);
-UdsDownloadResult uds_download_write(UdsDownload *download, uint8_t block,
-                                     const uint8_t *data, uint16_t length,
+void uds_download_init(UdsDownload *download, const UdsDownloadMemoryMap *memory,
+                       const UdsDownloadCallbacks *callbacks, void *context);
+UdsDownloadResult uds_download_begin(UdsDownload *download, uint32_t address, uint32_t length,
                                      uint32_t now_ms);
-UdsDownloadResult uds_download_finish(UdsDownload *download,
-                                      uint32_t expected_crc32,
+UdsDownloadResult uds_download_poll_erase(UdsDownload *download, uint32_t now_ms);
+UdsDownloadResult uds_download_write(UdsDownload *download, uint8_t block, const uint8_t *data,
+                                     uint16_t length, uint32_t now_ms);
+UdsDownloadResult uds_download_finish(UdsDownload *download, uint32_t expected_crc32,
                                       bool has_expected_crc32, uint32_t now_ms);
 UdsDownloadResult uds_download_tick(UdsDownload *download, uint32_t now_ms);
 void uds_download_abort(UdsDownload *download);

@@ -55,11 +55,11 @@ sanitizer gates.
 
 ## UDS diagnostics
 
-The opt-in UDS profile is a bounded classic-CAN ISO-TP and UDS reference subset. Review the [UDS/ISO-TP architecture](docs/11_uds_iso_tp.md), [DID and SecurityAccess policy](docs/12_uds_security_and_dids.md), [download and recovery boundary](docs/13_uds_download_and_recovery.md), and [validation and acceptance plan](docs/14_uds_validation_and_acceptance.md). The [STM32F767 hardware runner](tests/hardware/run_stm32f767_uds_acceptance.py) keeps reset and download operations disabled unless explicitly enabled. This branch does not claim complete ISO 14229 or ISO 15765-2 conformance, a production bootloader, or production cryptographic update security.
+The opt-in UDS profile is a bounded classic-CAN ISO-TP and UDS reference subset. Start with the [UDS documentation index](docs/uds/), especially the [architecture](docs/uds/architecture.md), [ISO-TP](docs/uds/isotp.md), [services](docs/uds/services.md), [CubeMX integration](docs/uds/cubemx_integration.md), and [HIL testing](docs/uds/hil_testing.md) guides. The [STM32F767 hardware runner](tests/hardware/run_uds_stm32f767_acceptance.py) keeps reset and download operations disabled unless explicitly enabled. This branch does not claim complete ISO 14229 or ISO 15765-2 conformance, a production bootloader, or production cryptographic update security.
 
 ## Hardware notes
 
-The generated pin map uses PI9 (CAN1_RX) / PA12 (CAN1_TX). Board bring-up,
+The generated pin map uses PI9 (CAN1_RX) / PA12 (CAN1_TX), as recorded in `stm32f767_canopen.ioc`. This differs from the main-branch reference documentation and must be reconciled with the actual board schematic before any hardware claim. Board bring-up,
 transceiver control, and application I/O remain board-specific weak hooks in
 `App/Src/canopen_reference_hw.c` and `canopen_reference_board.c`.
 
@@ -71,5 +71,5 @@ transceiver control, and application I/O remain board-specific weak hooks in
 | Dependencies and licenses | [THIRD_PARTY.md](THIRD_PARTY.md) |
 | Contribution process | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Security boundaries | [SECURITY.md](SECURITY.md) |
-| UDS/ISO-TP reference profile | [Architecture](docs/11_uds_iso_tp.md), [security and DIDs](docs/12_uds_security_and_dids.md), [download and recovery](docs/13_uds_download_and_recovery.md), and [acceptance plan](docs/14_uds_validation_and_acceptance.md) |
+| UDS/ISO-TP reference profile | [UDS documentation index](docs/uds/), including [architecture](docs/uds/architecture.md), [ISO-TP](docs/uds/isotp.md), [configuration](docs/uds/configuration.md), [CubeMX integration](docs/uds/cubemx_integration.md), and [HIL testing](docs/uds/hil_testing.md) |
 | Change history | [CHANGELOG.md](CHANGELOG.md) |

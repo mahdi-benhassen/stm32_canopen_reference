@@ -10,9 +10,9 @@
 #define UDS_DID_SESSION_DEFAULT_MASK (1U << 0U)
 #define UDS_DID_SESSION_PROGRAMMING_MASK (1U << 1U)
 #define UDS_DID_SESSION_EXTENDED_MASK (1U << 2U)
-#define UDS_DID_SESSION_ALL_MASK (UDS_DID_SESSION_DEFAULT_MASK | \
-                                  UDS_DID_SESSION_PROGRAMMING_MASK | \
-                                  UDS_DID_SESSION_EXTENDED_MASK)
+#define UDS_DID_SESSION_ALL_MASK                                                                   \
+    (UDS_DID_SESSION_DEFAULT_MASK | UDS_DID_SESSION_PROGRAMMING_MASK |                             \
+     UDS_DID_SESSION_EXTENDED_MASK)
 
 #define UDS_DID_SOFTWARE_VERSION 0xF180U
 #define UDS_DID_BOOTLOADER_VERSION 0xF181U
@@ -47,11 +47,10 @@ typedef struct {
     uint16_t length;
 } UdsDidValue;
 
-typedef UdsDidResult (*UdsDidReadFn)(void *context, uint16_t did,
-                                     uint8_t *data, uint16_t *length,
+typedef UdsDidResult (*UdsDidReadFn)(void *context, uint16_t did, uint8_t *data, uint16_t *length,
                                      uint16_t capacity);
-typedef UdsDidResult (*UdsDidWriteFn)(void *context, uint16_t did,
-                                      const uint8_t *data, uint16_t length);
+typedef UdsDidResult (*UdsDidWriteFn)(void *context, uint16_t did, const uint8_t *data,
+                                      uint16_t length);
 
 typedef struct {
     uint16_t did;
@@ -87,16 +86,12 @@ typedef struct {
     UdsDidEntry entries[UDS_PROJECT_DID_COUNT];
 } UdsDidRegistry;
 
-void uds_did_registry_init(UdsDidRegistry *registry,
-                           const UdsProjectDidSource *source);
-const UdsDidEntry *uds_did_registry_find(const UdsDidRegistry *registry,
-                                          uint16_t did);
-UdsDidResult uds_did_registry_read(const UdsDidRegistry *registry, uint16_t did,
-                                   uint8_t session, uint8_t security_level,
-                                   uint8_t *data, uint16_t *length,
+void uds_did_registry_init(UdsDidRegistry *registry, const UdsProjectDidSource *source);
+const UdsDidEntry *uds_did_registry_find(const UdsDidRegistry *registry, uint16_t did);
+UdsDidResult uds_did_registry_read(const UdsDidRegistry *registry, uint16_t did, uint8_t session,
+                                   uint8_t security_level, uint8_t *data, uint16_t *length,
                                    uint16_t capacity);
-UdsDidResult uds_did_registry_write(const UdsDidRegistry *registry, uint16_t did,
-                                    uint8_t session, uint8_t security_level,
-                                    const uint8_t *data, uint16_t length);
+UdsDidResult uds_did_registry_write(const UdsDidRegistry *registry, uint16_t did, uint8_t session,
+                                    uint8_t security_level, const uint8_t *data, uint16_t length);
 
 #endif

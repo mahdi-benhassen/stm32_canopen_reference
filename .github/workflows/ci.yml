@@ -131,6 +131,7 @@ jobs:
             tests/test_nmea2000_gateway.py \
             tests/run_nmea2000_gateway_contract.py \
             tests/hardware/run_uds_cia302_acceptance.py \
+            tests/hardware/run_uds_stm32f767_acceptance.py \
             tests/hardware/run_cia401_hil_campaign.py \
             tests/conformance/run_core_vectors.py \
             scripts/validate_build_manifest.py \
@@ -141,6 +142,11 @@ jobs:
           PYTHONPATH=.:tests PYTHONDONTWRITEBYTECODE=1 python3 tests/run_uds_isotp_contract.py
           PYTHONPATH=.:tests PYTHONDONTWRITEBYTECODE=1 python3 tests/run_nmea2000_gateway_contract.py
           PYTHONDONTWRITEBYTECODE=1 python3 tests/hardware/run_uds_cia302_acceptance.py --dry-run
+          PYTHONDONTWRITEBYTECODE=1 python3 tests/hardware/run_uds_stm32f767_acceptance.py \
+            --dry-run \
+            --json-out build/hil/uds-stm32f767-acceptance.json \
+            --csv-out build/hil/uds-stm32f767-acceptance.csv \
+            --report-out build/hil/uds-stm32f767-acceptance.txt
           python3 tests/hardware/run_cia401_hil_campaign.py \
             --dry-run \
             --output build/hil/cia401-hil-pending.json \
@@ -159,7 +165,7 @@ jobs:
             tests/test_profiles.c App/Src/cia401_reference.c App/Src/cia402_reference.c \
             -o build/tests/test_profiles
           build/tests/test_profiles
-          make -C tests/host all test-stm32-facade test-gateway-default-deny test-inventus-battery test-acceptance-filter
+          make -C tests/host all test-stm32-facade test-gateway-default-deny test-inventus-battery test-acceptance-filter test-uds
           make -C tests/host test-sanitize test-coverage
       - name: Run SocketCAN integration tests
         if: steps.vcan.outputs.available == 'true'
@@ -281,6 +287,16 @@ jobs:
             "${extra[@]}"
           cmake --build "build/ci-${{ matrix.personality.name }}" --parallel 2
           arm-none-eabi-size "build/ci-${{ matrix.personality.name }}/stm32f767_canopen.elf"
+      - name: Configure and build UDS-enabled diagnostic profile
+        if: matrix.personality.name == 'firmware'
+        run: |
+          cmake -S . -B build/ci-uds -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/gcc-arm-none-eabi.cmake \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCANOPEN_REFERENCE_PRODUCTION_PROFILE=ON \
+            -DCANOPEN_REFERENCE_ENABLE_UDS=ON
+          cmake --build build/ci-uds --parallel 2
+          arm-none-eabi-size build/ci-uds/stm32f767_canopen.elf
       - name: Check target memory budget
         if: matrix.personality.name == 'firmware'
         env:
@@ -329,6 +345,10 @@ jobs:
             build/ci-${{ matrix.personality.name }}/stm32f767_canopen.hex
             build/ci-${{ matrix.personality.name }}/stm32f767_canopen.bin
             build/ci-${{ matrix.personality.name }}/stm32f767_canopen.map
+            build/ci-uds/stm32f767_canopen.elf
+            build/ci-uds/stm32f767_canopen.hex
+            build/ci-uds/stm32f767_canopen.bin
+            build/ci-uds/stm32f767_canopen.map
             build/ci-build-manifest.txt
             build/ci-build-manifest.json
             build/memory-budget.json
