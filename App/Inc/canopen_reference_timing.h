@@ -42,6 +42,11 @@ typedef struct {
     uint32_t cia402_cycles_max;
     uint32_t cia418_cycles_max;
     uint32_t tpdo_cycles_max;
+    uint32_t uds_rx_cycles_max;
+    uint32_t isotp_cycles_max;
+    uint32_t uds_dispatch_cycles_max;
+    uint32_t uds_tx_cycles_max;
+    uint32_t uds_mainline_cycles_max;
 } CANopenReferenceTimingStats;
 
 /** Initialize the optional DWT cycle-counter measurement path. */

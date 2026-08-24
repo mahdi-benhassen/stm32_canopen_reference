@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "canopen_reference_diagnostics.h"
+#include "canopen_reference_timing.h"
 #include "uds.h"
 #include "uds_did.h"
 #include "uds_download.h"
@@ -358,6 +359,7 @@ void CANopenReference_UDS_Process(uint32_t now_ms) {
     if (!s_uds.initialized) {
         return;
     }
+    uint32_t uds_mainline_start = CANopenReferenceTiming_PhaseEnter();
     s_uds.now_ms = now_ms;
     (void)uds_server_tick(&s_uds.server, now_ms);
     UdsDownloadResult download_state = uds_download_tick(&s_uds.download, now_ms);
@@ -367,26 +369,39 @@ void CANopenReference_UDS_Process(uint32_t now_ms) {
 
     for (uint32_t budget = 0U; budget < UDS_STM32_RX_BUDGET_PER_CALL; ++budget) {
         IsoTpCanFrame frame = {0};
-        if (uds_stm32_can_rx_pop(&s_uds.can, &frame) != 1) {
+        uint32_t rx_start = CANopenReferenceTiming_PhaseEnter();
+        int rx_result = uds_stm32_can_rx_pop(&s_uds.can, &frame);
+        CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_rx_cycles_max,
+                                         rx_start);
+        if (rx_result != 1) {
             break;
         }
         if (frame.can_id == UDS_RX_CAN_ID) {
             IsoTpRxEvent event = {0};
+            uint32_t isotp_start = CANopenReferenceTiming_PhaseEnter();
             IsoTpStatus status = isotp_rx_feed(&s_uds.isotp_rx, &frame, now_ms, &event);
+            CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.isotp_cycles_max,
+                                             isotp_start);
             if (status == ISOTP_NEED_FLOW_CONTROL && event.has_flow_control) {
                 queue_tx_frame(&event.flow_control);
             }
             if (status == ISOTP_COMPLETE && (event.payload != NULL)) {
                 s_uds.response_length = 0U;
+                uint32_t dispatch_start = CANopenReferenceTiming_PhaseEnter();
                 UdsCallbackResult result = uds_server_handle(
                     &s_uds.server, event.payload, event.length, s_uds.response,
                     &s_uds.response_length, sizeof(s_uds.response), now_ms);
+                CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_dispatch_cycles_max,
+                                                 dispatch_start);
                 if ((result == UDS_RESULT_OK) && (s_uds.response_length != 0U)) {
                     IsoTpCanFrame tx_frame = {0};
                     if (isotp_tx_start(&s_uds.isotp_tx, s_uds.response,
                                        s_uds.response_length, now_ms, &tx_frame)
                         == ISOTP_TX_FRAME_READY) {
+                        uint32_t tx_start = CANopenReferenceTiming_PhaseEnter();
                         queue_tx_frame(&tx_frame);
+                        CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_tx_cycles_max,
+                                                         tx_start);
                     }
                 }
             }
@@ -396,8 +411,15 @@ void CANopenReference_UDS_Process(uint32_t now_ms) {
     }
 
     IsoTpCanFrame next_frame = {0};
-    if (isotp_tx_next(&s_uds.isotp_tx, now_ms, &next_frame) == ISOTP_TX_FRAME_READY) {
+    uint32_t isotp_tx_start = CANopenReferenceTiming_PhaseEnter();
+    IsoTpStatus tx_status = isotp_tx_next(&s_uds.isotp_tx, now_ms, &next_frame);
+    CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.isotp_cycles_max,
+                                     isotp_tx_start);
+    if (tx_status == ISOTP_TX_FRAME_READY) {
+        uint32_t tx_start = CANopenReferenceTiming_PhaseEnter();
         queue_tx_frame(&next_frame);
+        CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_tx_cycles_max,
+                                         tx_start);
     }
     if (isotp_rx_tick(&s_uds.isotp_rx, now_ms) == ISOTP_ERR_TIMEOUT) {
         uds_stm32_can_note_rx_timeout(&s_uds.can);
@@ -405,7 +427,12 @@ void CANopenReference_UDS_Process(uint32_t now_ms) {
     if (isotp_tx_tick(&s_uds.isotp_tx, now_ms) == ISOTP_ERR_TIMEOUT) {
         uds_stm32_can_note_tx_timeout(&s_uds.can);
     }
+    uint32_t tx_start = CANopenReferenceTiming_PhaseEnter();
     (void)uds_stm32_can_process_tx(&s_uds.can, UDS_STM32_TX_BUDGET_PER_CALL);
+    CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_tx_cycles_max,
+                                     tx_start);
+    CANopenReferenceTiming_PhaseExit(&canopenReferenceTimingStats.uds_mainline_cycles_max,
+                                     uds_mainline_start);
 }
 
 bool CANopenReference_UDS_ResetPending(void) {
